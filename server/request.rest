@@ -108,3 +108,50 @@ Authorization: Bearer {{accessToken}}
 ### Delete own comment
 DELETE {{baseUrl}}/api/comments/{{commentId}}
 Authorization: Bearer {{accessToken}}
+
+###
+
+# ─────────────────────────────────────────────
+# USERS
+# ─────────────────────────────────────────────
+
+### Get all users
+GET {{baseUrl}}/api/users
+
+###
+
+### Get user by ID
+GET {{baseUrl}}/api/users/{{userId}}
+
+###
+
+### Update own profile
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "username": "new_username",
+  "biography": "Vintage lover from Tel Aviv"
+}
+
+###
+
+### Upload profile picture
+POST {{baseUrl}}/api/users/{{userId}}/profile-picture
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="image"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ./profile.jpg
+
+------FormBoundary--
+
+###
+
+### Delete own account
+DELETE {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{accessToken}}
