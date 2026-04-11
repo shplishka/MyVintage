@@ -1,0 +1,172 @@
+@baseUrl = http://localhost:3000
+@accessToken = REPLACE_WITH_ACCESS_TOKEN
+@userId = REPLACE_WITH_USER_ID
+@postId = REPLACE_WITH_POST_ID
+@commentId = REPLACE_WITH_COMMENT_ID
+
+# POSTS
+
+### Create post
+POST {{baseUrl}}/api/posts
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "Vintage Levi's Jacket",
+  "description": "Great condition denim jacket from the 80s",
+  "category": "clothing",
+  "price": 75,
+  "condition": "good",
+  "year": 1985,
+  "brand": "Levi's",
+  "style": "Casual",
+  "images": []
+}
+
+###
+
+### Get all posts
+GET {{baseUrl}}/api/posts
+
+###
+
+### Get all posts with filters
+GET {{baseUrl}}/api/posts?category=clothing&minPrice=10&maxPrice=100
+
+###
+
+### Get posts by user
+GET {{baseUrl}}/api/posts/user/{{userId}}
+
+###
+
+### Get post by ID
+GET {{baseUrl}}/api/posts/{{postId}}
+
+###
+
+### Update post
+PUT {{baseUrl}}/api/posts/{{postId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "Updated Title",
+  "price": 60,
+  "status": "active"
+}
+
+###
+
+### Delete post
+DELETE {{baseUrl}}/api/posts/{{postId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Upload post images (up to 10 total)
+POST {{baseUrl}}/api/posts/{{postId}}/images
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="images"; filename="photo1.jpg"
+Content-Type: image/jpeg
+
+< ./photo1.jpg
+
+------FormBoundary--
+
+###
+
+# ─────────────────────────────────────────────
+# LIKES
+# ─────────────────────────────────────────────
+
+### Toggle like on a post (like / unlike)
+POST {{baseUrl}}/api/posts/{{postId}}/like
+Authorization: Bearer {{accessToken}}
+
+###
+
+# ─────────────────────────────────────────────
+# COMMENTS
+# ─────────────────────────────────────────────
+
+### Add comment to a post
+POST {{baseUrl}}/api/posts/{{postId}}/comments
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "content": "Love this jacket!"
+}
+
+###
+
+### Get all comments for a post
+GET {{baseUrl}}/api/posts/{{postId}}/comments
+
+###
+
+### Update own comment
+PUT {{baseUrl}}/api/comments/{{commentId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "content": "Actually, this is amazing!"
+}
+
+###
+
+### Delete own comment
+DELETE {{baseUrl}}/api/comments/{{commentId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+# ─────────────────────────────────────────────
+# USERS
+# ─────────────────────────────────────────────
+
+### Get all users
+GET {{baseUrl}}/api/users
+
+###
+
+### Get user by ID
+GET {{baseUrl}}/api/users/{{userId}}
+
+###
+
+### Update own profile
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "username": "new_username",
+  "biography": "Vintage lover from Tel Aviv"
+}
+
+###
+
+### Upload profile picture
+POST {{baseUrl}}/api/users/{{userId}}/profile-picture
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="image"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ./profile.jpg
+
+------FormBoundary--
+
+###
+
+### Delete own account
+DELETE {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{accessToken}}
