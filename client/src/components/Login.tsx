@@ -1,15 +1,28 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { login } from '../api/auth'
 import './Login.css'
 
 export default function Login() {
+  const navigate = useNavigate()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
-    // TODO: connect to backend
-    console.log('Login:', { email, password })
+    setError(null)
+    setLoading(true)
+    try {
+      await login({ email, password })
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -20,7 +33,9 @@ export default function Login() {
           <p className="login-tagline">Discover rare. Sell beloved.</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit} noValidate>
+          {error && <p className="login-error">{error}</p>}
+
           <div className="field">
             <input
               type="email"
@@ -43,7 +58,9 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className="login-btn">Log In</button>
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? 'Logging in…' : 'Log In'}
+          </button>
         </form>
 
         <div className="login-divider">
@@ -52,7 +69,7 @@ export default function Login() {
 
         <p className="login-signup-link">
           Don't have an account?{' '}
-          <Link to="/signup">Sign up</Link>
+          <Link to="/register">Register</Link>
         </p>
       </div>
     </div>
