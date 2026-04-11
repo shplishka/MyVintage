@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { createPost, getAllPosts, getPostsByUser, getPostById, updatePost, deletePost, toggleLike } from '../controllers/post.controller';
+import { createPost, getAllPosts, getPostsByUser, getPostById, updatePost, deletePost, toggleLike, uploadPostImages } from '../controllers/post.controller';
+import { uploadPostImages as postImagesUpload } from '../middleware/upload.middleware';
 import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
@@ -199,5 +200,52 @@ router.delete('/:id', authenticate, deletePost);
  *         description: Post not found
  */
 router.post('/:id/like', authenticate, toggleLike);
+
+/**
+ * @swagger
+ * /api/posts/{id}/images:
+ *   post:
+ *     summary: Upload images to a post (seller only, max 10 total)
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [images]
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Image files (max 10 total across all uploads, 5 MB each)
+ *     responses:
+ *       200:
+ *         description: Images uploaded
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 images:
+ *                   type: array
+ *                   items: { type: string }
+ *       400:
+ *         description: No files provided or would exceed 10-image limit
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Post not found
+ */
+router.post('/:id/images', authenticate, postImagesUpload.array('images', 10), uploadPostImages);
 
 export default router;

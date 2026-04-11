@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getAllUsers, getUserById, updateUser, deleteUser, uploadProfilePicture } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth.middleware';
-import upload from '../middleware/upload.middleware';
+import { uploadProfilePicture as profilePictureUpload } from '../middleware/upload.middleware';
 
 const router = Router();
 
@@ -155,6 +155,6 @@ router.delete('/:id', authenticate, deleteUser);
  *       404:
  *         description: User not found
  */
-router.post('/:id/profile-picture', authenticate, upload.single('image'), uploadProfilePicture);
+router.post('/:id/profile-picture', authenticate, profilePictureUpload.single('image'), uploadProfilePicture);
 
 export default router;

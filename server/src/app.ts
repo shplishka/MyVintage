@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import dotenv from "dotenv";
 import path from "path";
 import swaggerUi from 'swagger-ui-express';
@@ -14,7 +14,7 @@ const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/public', express.static(path.join(__dirname, '../public')));
+app.use('/media', express.static(path.join(__dirname, '../public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);

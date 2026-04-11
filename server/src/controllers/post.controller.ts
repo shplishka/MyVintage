@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import Post from '../models/Post';
 import Like from '../models/Like';
 
+const MAX_IMAGES = 10;
+
 export const createPost = async (req: Request, res: Response): Promise<void> => {
     const { title, description, category, price, condition, year, brand, style, images } = req.body;
 
@@ -93,6 +95,40 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
 
     await post.deleteOne();
     res.json({ message: 'Post deleted successfully' });
+};
+
+export const uploadPostImages = async (req: Request, res: Response): Promise<void> => {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+        res.status(404).json({ message: 'Post not found' });
+        return;
+    }
+
+    if (post.seller.toString() !== req.jwtUser!.userId) {
+        res.status(403).json({ message: 'Forbidden: you are not the seller of this post' });
+        return;
+    }
+
+    const incoming = (req.files as Express.Multer.File[]) ?? [];
+
+    if (incoming.length === 0) {
+        res.status(400).json({ message: 'No image files provided' });
+        return;
+    }
+
+    if (post.images.length + incoming.length > MAX_IMAGES) {
+        res.status(400).json({
+            message: `Cannot exceed ${MAX_IMAGES} images per post. Post already has ${post.images.length}.`,
+        });
+        return;
+    }
+
+    const newPaths = incoming.map(f => `/media/posts/${req.params.id}/${f.filename}`);
+    post.images.push(...newPaths);
+    await post.save();
+
+    res.json({ images: post.images });
 };
 
 export const toggleLike = async (req: Request, res: Response): Promise<void> => {

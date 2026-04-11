@@ -14,14 +14,16 @@ jest.mock('../src/middleware/auth.middleware', () => ({
 
 // Multer mock: injects req.file when a file field is present, otherwise leaves it undefined
 jest.mock('../src/middleware/upload.middleware', () => ({
-    __esModule: true,
-    default: {
+    uploadProfilePicture: {
         single: jest.fn(() => (req: any, _res: any, next: any) => {
             if (req.headers['x-mock-file'] === 'true') {
                 req.file = { filename: 'user123.jpg', mimetype: 'image/jpeg' };
             }
             next();
         }),
+    },
+    uploadPostImages: {
+        array: jest.fn(() => (_req: any, _res: any, next: any) => next()),
     },
 }));
 
@@ -63,7 +65,7 @@ describe('POST /api/users/:id/profile-picture', () => {
             .set('x-mock-file', 'true');
 
         expect(res.status).toBe(200);
-        expect(res.body.profilePicture).toBe('/public/user123.jpg');
+        expect(res.body.profilePicture).toBe('/media/profile-pictures/user123.jpg');
         expect(user.save).toHaveBeenCalled();
     });
 

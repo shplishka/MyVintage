@@ -58,7 +58,7 @@ export const uploadProfilePicture = async (req: AuthRequest, res: Response): Pro
         return;
     }
 
-    user.profilePicture = `/public/${req.file.filename}`;
+    user.profilePicture = `/media/profile-pictures/${req.file.filename}`;
     await user.save();
 
     res.json({ profilePicture: user.profilePicture });
