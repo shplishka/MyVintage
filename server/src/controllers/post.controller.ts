@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import Post from '../models/Post';
 import Like from '../models/Like';
-
-const MAX_IMAGES = 10;
+const MAX_POST_IMAGES = parseInt(process.env.MAX_POST_IMAGES ?? '10', 10);
 
 export const createPost = async (req: Request, res: Response): Promise<void> => {
     const { title, description, category, price, condition, year, brand, style, images } = req.body;
@@ -117,9 +116,9 @@ export const uploadPostImages = async (req: Request, res: Response): Promise<voi
         return;
     }
 
-    if (post.images.length + incoming.length > MAX_IMAGES) {
+    if (post.images.length + incoming.length > MAX_POST_IMAGES) {
         res.status(400).json({
-            message: `Cannot exceed ${MAX_IMAGES} images per post. Post already has ${post.images.length}.`,
+            message: `Cannot exceed ${MAX_POST_IMAGES} images per post. Post already has ${post.images.length}.`,
         });
         return;
     }
