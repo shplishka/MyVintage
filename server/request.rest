@@ -64,6 +64,21 @@ Authorization: Bearer {{accessToken}}
 
 ###
 
+### Upload post images (up to 10 total)
+POST {{baseUrl}}/api/posts/{{postId}}/images
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="images"; filename="photo1.jpg"
+Content-Type: image/jpeg
+
+< ./photo1.jpg
+
+------FormBoundary--
+
+###
+
 # ─────────────────────────────────────────────
 # LIKES
 # ─────────────────────────────────────────────
@@ -134,21 +149,6 @@ Authorization: Bearer {{accessToken}}
   "username": "new_username",
   "biography": "Vintage lover from Tel Aviv"
 }
-
-###
-
-### Upload post images (up to 10 total)
-POST {{baseUrl}}/api/posts/{{postId}}/images
-Authorization: Bearer {{accessToken}}
-Content-Type: multipart/form-data; boundary=----FormBoundary
-
-------FormBoundary
-Content-Disposition: form-data; name="images"; filename="photo1.jpg"
-Content-Type: image/jpeg
-
-< ./photo1.jpg
-
-------FormBoundary--
 
 ###
 
