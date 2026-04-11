@@ -1,15 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { login } from '../api/auth'
+import { useAuth } from '../context/AuthContext'
 import './Login.css'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login, user } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  // Navigate only after the context state has committed
+  useEffect(() => {
+    if (user) {
+      navigate(`/profile/${user._id}`, { replace: true })
+    }
+  }, [user, navigate])
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
@@ -17,7 +25,6 @@ export default function Login() {
     setLoading(true)
     try {
       await login({ email, password })
-      navigate('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed.')
     } finally {
