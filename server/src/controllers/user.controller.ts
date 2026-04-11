@@ -41,6 +41,29 @@ export const updateUser = async (req: AuthRequest, res: Response): Promise<void>
     res.json(user);
 };
 
+export const uploadProfilePicture = async (req: AuthRequest, res: Response): Promise<void> => {
+    if (req.params.id !== req.jwtUser?.userId) {
+        res.status(403).json({ message: 'Forbidden: you can only update your own profile picture' });
+        return;
+    }
+
+    if (!req.file) {
+        res.status(400).json({ message: 'No image file provided' });
+        return;
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+
+    user.profilePicture = `/media/profile-pictures/${req.file.filename}`;
+    await user.save();
+
+    res.json({ profilePicture: user.profilePicture });
+};
+
 export const deleteUser = async (req: AuthRequest, res: Response): Promise<void> => {
     if (req.params.id !== req.jwtUser?.userId) {
         res.status(403).json({ message: 'Forbidden: you can only delete your own account' });

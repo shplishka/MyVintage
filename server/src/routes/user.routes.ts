@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { getAllUsers, getUserById, updateUser, deleteUser } from '../controllers/user.controller';
+import { getAllUsers, getUserById, updateUser, deleteUser, uploadProfilePicture } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth.middleware';
+import { uploadProfilePicture as profilePictureUpload } from '../middleware/upload.middleware';
 
 const router = Router();
 
@@ -110,5 +111,50 @@ router.put('/:id', authenticate, updateUser);
  *         description: User not found
  */
 router.delete('/:id', authenticate, deleteUser);
+
+/**
+ * @swagger
+ * /api/users/{id}/profile-picture:
+ *   post:
+ *     summary: Upload a profile picture (authenticated user only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [image]
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file (max 5 MB)
+ *     responses:
+ *       200:
+ *         description: Profile picture uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 profilePicture:
+ *                   type: string
+ *                   example: "https://storage.googleapis.com/bucket/profile-pictures/userId.jpg"
+ *       400:
+ *         description: No image file provided
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ */
+router.post('/:id/profile-picture', authenticate, profilePictureUpload.single('image'), uploadProfilePicture);
 
 export default router;

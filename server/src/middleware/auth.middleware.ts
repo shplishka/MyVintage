@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AuthRequest } from '../types/authRequest';
 
 export interface JwtPayload {
     userId: string;
@@ -28,8 +27,10 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
         req.jwtUser = payload;
-        next();
     } catch {
         res.status(401).json({ message: 'Invalid or expired token' });
+        return;
     }
+
+    next();
 };

@@ -12,6 +12,24 @@ jest.mock('../src/middleware/auth.middleware', () => ({
     }),
 }));
 
+jest.mock('../src/middleware/upload.middleware', () => ({
+    uploadProfilePicture: {
+        single: jest.fn(() => (_req: any, _res: any, next: any) => next()),
+    },
+    uploadPostImages: {
+        array: jest.fn(() => (req: any, _res: any, next: any) => {
+            if (req.headers['x-mock-files']) {
+                const count = parseInt(req.headers['x-mock-files'], 10);
+                req.files = Array.from({ length: count }, (_, i) => ({
+                    filename: `img${i}.jpg`,
+                    mimetype: 'image/jpeg',
+                }));
+            }
+            next();
+        }),
+    },
+}));
+
 // Imports
 
 import Post from '../src/models/Post';
@@ -264,5 +282,81 @@ describe('DELETE /api/posts/:id', () => {
 
         expect(res.status).toBe(403);
         expect(res.body.message).toMatch(/not the seller/i);
+    });
+});
+
+// POST /api/posts/:id/images
+
+describe('POST /api/posts/:id/images', () => {
+    it('uploads images and returns the updated images list', async () => {
+        const post = makePost({ images: [] });
+        (Post.findById as jest.Mock).mockResolvedValue(post);
+
+        const res = await request(app)
+            .post(`/api/posts/${POST_ID}/images`)
+            .set('x-mock-files', '2');
+
+        expect(res.status).toBe(200);
+        expect(res.body.images).toHaveLength(2);
+        expect(res.body.images[0]).toBe(`/media/posts/${POST_ID}/img0.jpg`);
+        expect(post.save).toHaveBeenCalled();
+    });
+
+    it('appends to existing images', async () => {
+        const post = makePost({ images: ['/media/posts/post789/existing.jpg'] });
+        (Post.findById as jest.Mock).mockResolvedValue(post);
+
+        const res = await request(app)
+            .post(`/api/posts/${POST_ID}/images`)
+            .set('x-mock-files', '2');
+
+        expect(res.status).toBe(200);
+        expect(res.body.images).toHaveLength(3);
+    });
+
+    it('returns 400 when no files are provided', async () => {
+        const post = makePost();
+        (Post.findById as jest.Mock).mockResolvedValue(post);
+
+        const res = await request(app)
+            .post(`/api/posts/${POST_ID}/images`);
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe('No image files provided');
+    });
+
+    it('returns 400 when upload would exceed the 10-image limit', async () => {
+        const post = makePost({ images: new Array(9).fill('/media/posts/post789/x.jpg') });
+        (Post.findById as jest.Mock).mockResolvedValue(post);
+
+        const res = await request(app)
+            .post(`/api/posts/${POST_ID}/images`)
+            .set('x-mock-files', '2');
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/cannot exceed/i);
+    });
+
+    it('returns 403 when requester is not the seller', async () => {
+        const post = makePost({ seller: { toString: () => OTHER_ID } });
+        (Post.findById as jest.Mock).mockResolvedValue(post);
+
+        const res = await request(app)
+            .post(`/api/posts/${POST_ID}/images`)
+            .set('x-mock-files', '1');
+
+        expect(res.status).toBe(403);
+        expect(res.body.message).toMatch(/not the seller/i);
+    });
+
+    it('returns 404 when post does not exist', async () => {
+        (Post.findById as jest.Mock).mockResolvedValue(null);
+
+        const res = await request(app)
+            .post(`/api/posts/${POST_ID}/images`)
+            .set('x-mock-files', '1');
+
+        expect(res.status).toBe(404);
+        expect(res.body.message).toBe('Post not found');
     });
 });
