@@ -1,0 +1,43 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 56px;
+  background: #3b2314;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.navbar-logo {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fdf6ec;
+  letter-spacing: -0.5px;
+}
+
+.navbar-logout {
+  background: transparent;
+  border: 1px solid rgba(253, 246, 236, 0.35);
+  border-radius: 4px;
+  color: #fdf6ec;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.navbar-logout:hover {
+  background: rgba(253, 246, 236, 0.12);
+  border-color: rgba(253, 246, 236, 0.6);
+}
+
+.navbar-logout:active {
+  opacity: 0.75;
+}

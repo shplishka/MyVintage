@@ -3,6 +3,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import ProfilePage from './components/ProfilePage'
 import ProtectedRoute from './components/ProtectedRoute'
+import Layout from './components/Layout'
 
 export default function App() {
   return (
@@ -12,9 +13,11 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Private */}
+        {/* Private — navbar + auth guard */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route element={<Layout />}>
+            <Route path="/profile/:userId" element={<ProfilePage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

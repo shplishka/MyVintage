@@ -141,7 +141,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [fetchUser],
   )
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (refreshToken) {
+      try {
+        await api.post('/api/auth/logout', { refreshToken })
+      } catch {
+        // ignore — still clear client-side session
+      }
+    }
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     setState({ user: null, accessToken: null, tokenExpiry: null, isLoading: false })
