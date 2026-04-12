@@ -9,8 +9,6 @@ import api from '../api/axiosInstance'
 import { login as apiLogin } from '../api/auth'
 import type { LoginPayload } from '../api/auth'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 export interface AuthUser {
   _id: string
   username: string
@@ -32,8 +30,6 @@ interface AuthContextValue extends AuthState {
   refreshUser(): Promise<void>
 }
 
-// ── JWT decode (no external library needed) ───────────────────────────────────
-
 interface JwtPayload {
   userId: string
   email: string
@@ -48,11 +44,9 @@ function decodeToken(token: string): JwtPayload | null {
   }
 }
 
-// ── Context ───────────────────────────────────────────────────────────────────
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-// ── Provider ──────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -62,13 +56,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading: true,
   })
 
-  // Fetch the full user object for a given userId
   const fetchUser = useCallback(async (userId: string): Promise<AuthUser> => {
     const { data } = await api.get<AuthUser>(`/api/users/${userId}`)
     return data
   }, [])
 
-  // Sync context state from the token currently in localStorage
   const syncFromStorage = useCallback(async () => {
     const stored = localStorage.getItem('accessToken')
     if (!stored) {
@@ -77,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const payload = decodeToken(stored)
-    if (!payload) {
+    if (!payload || new Date(payload.exp * 1000) <= new Date()) {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       setState({ user: null, accessToken: null, tokenExpiry: null, isLoading: false })
@@ -86,30 +78,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const expiry = new Date(payload.exp * 1000)
 
-    // Token already expired — clear and bail
-    if (expiry <= new Date()) {
+    try {
+      const { data: user } = await api.get<AuthUser>('/api/auth/me')
+      setState({ user, accessToken: stored, tokenExpiry: expiry, isLoading: false })
+    } catch {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       setState({ user: null, accessToken: null, tokenExpiry: null, isLoading: false })
-      return
     }
+  }, [])
 
-    try {
-      const user = await fetchUser(payload.userId)
-      setState({ user, accessToken: stored, tokenExpiry: expiry, isLoading: false })
-    } catch {
-      // Could not fetch user (e.g. network down) — keep token, no user object
-      setState({ user: null, accessToken: stored, tokenExpiry: expiry, isLoading: false })
-    }
-  }, [fetchUser])
-
-  // Bootstrap on mount
   useEffect(() => {
     syncFromStorage()
   }, [syncFromStorage])
 
-  // When the refresh interceptor rotates the access token it dispatches this
-  // event so the context stays in sync without a circular dependency
+
   useEffect(() => {
     const handler = (e: Event) => {
       const { accessToken } = (e as CustomEvent<{ accessToken: string }>).detail
@@ -125,7 +108,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('token:refreshed', handler)
   }, [])
 
-  // ── Public API ──────────────────────────────────────────────────────────────
 
   const login = useCallback(
     async (payload: LoginPayload): Promise<AuthUser> => {
@@ -147,7 +129,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         await api.post('/api/auth/logout', { refreshToken })
       } catch {
-        // ignore — still clear client-side session
       }
     }
     localStorage.removeItem('accessToken')
@@ -171,8 +152,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   )
 }
-
-// ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext)

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import RefreshToken from '../models/RefreshToken';
 import { generateTokens, getRefreshTokenExpiry } from '../services/token';
+import { AuthRequest } from '../types/authRequest';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     const { username, email, password } = req.body;
@@ -104,4 +105,13 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 
     await RefreshToken.deleteOne({ token: refreshToken });
     res.json({ message: 'Logged out successfully' });
+};
+
+export const me = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user = await User.findById(req.jwtUser?.userId).select('-password');
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+    res.json(user);
 };

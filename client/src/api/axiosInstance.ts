@@ -4,7 +4,6 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 })
 
-// ── Request: attach access token ──────────────────────────────────────────────
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
   if (token) {
@@ -13,7 +12,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// ── Response: handle 401 → refresh → retry ───────────────────────────────────
 let isRefreshing = false
 let refreshQueue: Array<(token: string) => void> = []
 
@@ -27,12 +25,10 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config
 
-    // Only handle 401s that haven't already been retried
     if (error.response?.status !== 401 || original._retry) {
       return Promise.reject(error)
     }
 
-    // If a refresh is already in flight, queue this request until it resolves
     if (isRefreshing) {
       return new Promise((resolve) => {
         refreshQueue.push((token) => {
@@ -62,7 +58,6 @@ api.interceptors.response.use(
       original.headers.Authorization = `Bearer ${newAccessToken}`
       return api(original)
     } catch {
-      // Refresh failed — clear storage and send to login
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       window.location.href = '/login'

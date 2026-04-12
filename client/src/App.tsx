@@ -9,11 +9,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Private — navbar + auth guard */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/profile/:userId" element={<ProfilePage />} />
