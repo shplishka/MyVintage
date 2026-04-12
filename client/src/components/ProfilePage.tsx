@@ -76,12 +76,9 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* ── Divider ── */}
       <div className="profile-divider" />
-
-      {/* ── Posts section ── */}
       <section className="profile-posts-section">
-        <h2 className="profile-posts-title">Listings</h2>
+        <h2 className="profile-posts-title">Products</h2>
 
         {loadingPosts ? (
           <p className="profile-posts-loading">Loading posts…</p>

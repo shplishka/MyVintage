@@ -6,7 +6,8 @@ import {
   useState,
 } from 'react'
 import api from '../api/axiosInstance'
-import { login as apiLogin, LoginPayload } from '../api/auth'
+import { login as apiLogin } from '../api/auth'
+import type { LoginPayload } from '../api/auth'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

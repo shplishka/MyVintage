@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import { useAuth } from '../context/AuthContext'
 import './Login.css'
 
@@ -12,7 +13,6 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Navigate only after the context state has committed
   useEffect(() => {
     if (user) {
       navigate(`/profile/${user._id}`, { replace: true })
@@ -26,7 +26,11 @@ export default function Login() {
     try {
       await login({ email, password })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed.')
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.message ?? 'Login failed.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Login failed.')
+      }
     } finally {
       setLoading(false)
     }
