@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import cors from 'cors';
 import dotenv from "dotenv";
 import path from "path";
 import swaggerUi from 'swagger-ui-express';
@@ -13,6 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use('/media', express.static(path.join(__dirname, '../public')));
 app.use('/api/auth', authRoutes);

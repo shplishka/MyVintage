@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { register, login, refresh, logout } from '../controllers/auth.controller';
+import { register, login, refresh, logout, me } from '../controllers/auth.controller';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -134,5 +135,27 @@ router.post('/refresh', refresh);
  *         description: refreshToken is required
  */
 router.post('/logout', logout);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get the currently authenticated user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+router.get('/me', authenticate, me);
 
 export default router;

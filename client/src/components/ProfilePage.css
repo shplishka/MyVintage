@@ -1,0 +1,143 @@
+/* ── Page shell ── */
+.profile-page {
+  min-height: 100svh;
+  background: #fdf6ec;
+  padding: 32px 24px 64px;
+  box-sizing: border-box;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── Loading / error states ── */
+.profile-loading,
+.profile-error,
+.profile-posts-loading,
+.profile-no-posts {
+  text-align: center;
+  font-size: 15px;
+  color: #9c7a5a;
+  padding: 48px 0;
+}
+
+.profile-error {
+  color: #b94a48;
+}
+
+/* ── Header ── */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ── Avatar ── */
+.profile-avatar-wrap {
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e8ddd0;
+}
+
+.profile-avatar-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #e8ddd0;
+  border: 3px solid #d4c4b0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  font-weight: 700;
+  color: #8b4513;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* ── User info ── */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-username {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3b2314;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.profile-email {
+  font-size: 14px;
+  color: #9c7a5a;
+  margin: 0;
+}
+
+/* ── Divider ── */
+.profile-divider {
+  height: 1px;
+  background: #e8ddd0;
+  margin: 32px 0;
+}
+
+/* ── Posts section ── */
+.profile-posts-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #3b2314;
+  margin: 0 0 20px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+/* ── Grid ── */
+.profile-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Post card ── */
+.profile-post-card {
+  background: #fff;
+  border: 1px solid #e8ddd0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.post-card-img-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f0e9df;
+}
+
+.post-card-title {
+  font-size: 13px;
+  color: #3b2314;
+  padding: 8px 10px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
