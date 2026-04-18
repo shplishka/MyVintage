@@ -90,7 +90,8 @@
 .profile-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  flex: 1;
 }
 
 .profile-username {
@@ -102,10 +103,48 @@
   letter-spacing: -0.5px;
 }
 
-.profile-email {
+.profile-bio {
   font-size: 14px;
-  color: #9c7a5a;
+  color: #7a6352;
   margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Metadata row ── */
+.profile-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.profile-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #9c7a5a;
+}
+
+.profile-meta-item svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.profile-meta-star svg {
+  color: #c9960c;
+}
+
+.profile-meta-muted {
+  color: #b0a090;
+}
+
+.profile-meta-dot {
+  color: #c8b8a8;
+  font-size: 13px;
+  line-height: 1;
 }
 
 /* ── Divider ── */

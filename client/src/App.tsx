@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Login'
 import Register from './components/Register'
 import ProfilePage from './components/ProfilePage'
+import EditProfilePage from './components/EditProfilePage'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 
@@ -15,6 +16,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/profile/:userId/edit" element={<EditProfilePage />} />
           </Route>
         </Route>
 

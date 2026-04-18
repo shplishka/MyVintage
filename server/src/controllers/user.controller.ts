@@ -30,7 +30,7 @@ export const updateUser = async (req: AuthRequest, res: Response): Promise<void>
         return;
     }
 
-    const allowed = ['username', 'profilePicture', 'biography'];
+    const allowed = ['username', 'profilePicture', 'biography', 'location'];
     allowed.forEach((field) => {
         if (req.body[field] !== undefined) {
             (user as unknown as Record<string, unknown>)[field] = req.body[field];
