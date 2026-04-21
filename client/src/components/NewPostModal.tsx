@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import api from '../api/axiosInstance'
 import './NewPostModal.css'
 
-interface NewPost {
+export interface NewPost {
   _id: string
   title: string
   description: string
@@ -13,6 +13,8 @@ interface NewPost {
   brand: string
   style: string
   images: string[]
+  seller: { _id: string; username: string; profilePicture?: string | null }
+  createdAt: string
 }
 
 interface Props {

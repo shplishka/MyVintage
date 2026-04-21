@@ -226,11 +226,11 @@
 /* ── Grid ── */
 .profile-posts-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
 
-  @media (max-width: 600px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -238,31 +238,202 @@
 .profile-post-card {
   background: #fff;
   border: 1px solid #e8ddd0;
-  border-radius: 4px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* ── Image wrapper (for overlays) ── */
+.post-card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
 }
 
 .post-card-img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
 
 .post-card-img-placeholder {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   background: #f0e9df;
+}
+
+/* ── Heart button ── */
+.post-card-heart {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  backdrop-filter: blur(4px);
+}
+
+.post-card-heart svg {
+  width: 16px;
+  height: 16px;
+  color: #9c7a5a;
+}
+
+.post-card-heart:hover svg {
+  color: #c0392b;
+}
+
+/* ── Condition / year badges ── */
+.post-card-badges {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.post-card-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #3b2314;
+  background: rgba(255,255,255,0.88);
+  border-radius: 20px;
+  padding: 3px 8px;
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.2px;
+}
+
+/* ── Info section ── */
+.post-card-info {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Title + price */
+.post-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
 }
 
 .post-card-title {
   font-size: 13px;
+  font-weight: 600;
   color: #3b2314;
-  padding: 8px 10px;
   margin: 0;
+  line-height: 1.4;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.post-card-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2d7a4f;
   white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Category */
+.post-card-category {
+  font-size: 11px;
+  color: #9c7a5a;
+  margin: 0;
+}
+
+/* Seller row */
+.post-card-seller-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.post-card-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.post-card-avatar-placeholder {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e8ddd0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #8b4513;
+  flex-shrink: 0;
+}
+
+.post-card-seller-name {
+  font-size: 12px;
+  color: #3b2314;
+  font-weight: 500;
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-card-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c9960c;
+  flex-shrink: 0;
+}
+
+.post-card-rating svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* Location + time */
+.post-card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #b0a090;
+}
+
+.post-card-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.post-card-location svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.post-card-time {
+  margin-left: auto;
 }

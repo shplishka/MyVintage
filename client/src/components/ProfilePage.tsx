@@ -17,11 +17,23 @@ interface User {
   itemsSold?: number
 }
 
+interface Seller {
+  _id: string
+  username: string
+  profilePicture?: string | null
+}
+
 interface Post {
   _id: string
   title: string
   images: string[]
   description?: string
+  price: number
+  category: string
+  condition: string
+  year: number
+  seller: Seller
+  createdAt: string
 }
 
 export default function ProfilePage() {
@@ -163,14 +175,80 @@ export default function ProfilePage() {
                   const imgSrc = post.images?.[0]
                     ? `${import.meta.env.VITE_API_URL}${post.images[0]}`
                     : null
+                  const sellerAvatar = post.seller?.profilePicture
+                    ? `${import.meta.env.VITE_API_URL}${post.seller.profilePicture}`
+                    : null
+                  const conditionLabel = post.condition
+                    ? post.condition.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())
+                    : null
+                  const timeAgo = (() => {
+                    const diff = Date.now() - new Date(post.createdAt).getTime()
+                    const mins = Math.floor(diff / 60000)
+                    if (mins < 60) return `${mins}m ago`
+                    const hrs = Math.floor(mins / 60)
+                    if (hrs < 24) return `${hrs}h ago`
+                    const days = Math.floor(hrs / 24)
+                    return `${days}d ago`
+                  })()
                   return (
                     <div key={post._id} className="profile-post-card">
-                      {imgSrc ? (
-                        <img className="post-card-img" src={imgSrc} alt={post.title} />
-                      ) : (
-                        <div className="post-card-img-placeholder" />
-                      )}
-                      <p className="post-card-title">{post.title}</p>
+                      {/* Image + overlays */}
+                      <div className="post-card-img-wrap">
+                        {imgSrc ? (
+                          <img className="post-card-img" src={imgSrc} alt={post.title} />
+                        ) : (
+                          <div className="post-card-img-placeholder" />
+                        )}
+                        <button className="post-card-heart" aria-label="Save">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                        <div className="post-card-badges">
+                          {conditionLabel && <span className="post-card-badge">{conditionLabel}</span>}
+                          {post.year && <span className="post-card-badge">{post.year}s</span>}
+                        </div>
+                      </div>
+
+                      {/* Info */}
+                      <div className="post-card-info">
+                        <div className="post-card-title-row">
+                          <p className="post-card-title">{post.title}</p>
+                          <span className="post-card-price">${post.price}</span>
+                        </div>
+                        {post.category && (
+                          <p className="post-card-category">
+                            {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
+                          </p>
+                        )}
+                        <div className="post-card-seller-row">
+                          {sellerAvatar ? (
+                            <img className="post-card-avatar" src={sellerAvatar} alt={post.seller.username} />
+                          ) : (
+                            <div className="post-card-avatar-placeholder">
+                              {post.seller?.username?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <span className="post-card-seller-name">{post.seller?.username}</span>
+                          <span className="post-card-rating">
+                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            {(user.rating ?? 0).toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="post-card-meta-row">
+                          {user.location && (
+                            <span className="post-card-location">
+                              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                              </svg>
+                              {user.location}
+                            </span>
+                          )}
+                          <span className="post-card-time">{timeAgo}</span>
+                        </div>
+                      </div>
                     </div>
                   )
                 })}
@@ -185,7 +263,7 @@ export default function ProfilePage() {
       {showNewPost && (
         <NewPostModal
           onClose={() => setShowNewPost(false)}
-          onCreated={(post) => setPosts((prev) => [post, ...prev])}
+          onCreated={(post) => setPosts((prev) => [post as unknown as Post, ...prev])}
         />
       )}
     </div>
