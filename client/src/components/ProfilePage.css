@@ -185,6 +185,33 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
 }
 
+/* ── New listing button ── */
+.profile-new-post-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: #8b4513;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 16px;
+}
+
+.profile-new-post-btn:hover {
+  background: #6d3410;
+}
+
+.profile-new-post-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
 /* ── Posts section ── */
 .profile-posts-title {
   font-family: 'Georgia', 'Times New Roman', serif;

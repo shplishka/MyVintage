@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../api/axiosInstance'
 import { useAuth } from '../context/AuthContext'
+import NewPostModal from './NewPostModal'
 import './ProfilePage.css'
 
 interface User {
@@ -18,9 +19,8 @@ interface User {
 
 interface Post {
   _id: string
-  title?: string
-  imageUrl?: string
-  image?: string
+  title: string
+  images: string[]
   description?: string
 }
 
@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [loadingPosts, setLoadingPosts] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'listings' | 'saved' | 'sold'>('listings')
+  const [showNewPost, setShowNewPost] = useState(false)
 
   useEffect(() => {
     if (!userId) return
@@ -49,7 +50,7 @@ export default function ProfilePage() {
 
     setLoadingPosts(true)
     api
-      .get<Post[]>(`/api/posts?userId=${userId}`)
+      .get<Post[]>(`/api/posts/user/${userId}`)
       .then(({ data }) => setPosts(data))
       .catch(() => setPosts([]))
       .finally(() => setLoadingPosts(false))
@@ -142,33 +143,51 @@ export default function ProfilePage() {
       {/* ── Tab content ── */}
       <section className="profile-posts-section">
         {activeTab === 'listings' && (
-          loadingPosts ? (
-            <p className="profile-posts-loading">Loading posts…</p>
-          ) : posts.length === 0 ? (
-            <p className="profile-no-posts">no posts yet</p>
-          ) : (
-            <div className="profile-posts-grid">
-              {posts.map((post) => {
-                const imgSrc = post.imageUrl ?? post.image
-                  ? `${import.meta.env.VITE_API_URL}/${post.imageUrl ?? post.image}`
-                  : null
-                return (
-                  <div key={post._id} className="profile-post-card">
-                    {imgSrc ? (
-                      <img className="post-card-img" src={imgSrc} alt={post.title ?? 'Post'} />
-                    ) : (
-                      <div className="post-card-img-placeholder" />
-                    )}
-                    {post.title && <p className="post-card-title">{post.title}</p>}
-                  </div>
-                )
-              })}
-            </div>
-          )
+          <>
+            {isOwner && (
+              <button className="profile-new-post-btn" onClick={() => setShowNewPost(true)}>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                New Listing
+              </button>
+            )}
+
+            {loadingPosts ? (
+              <p className="profile-posts-loading">Loading posts…</p>
+            ) : posts.length === 0 ? (
+              <p className="profile-no-posts">no posts yet</p>
+            ) : (
+              <div className="profile-posts-grid">
+                {posts.map((post) => {
+                  const imgSrc = post.images?.[0]
+                    ? `${import.meta.env.VITE_API_URL}${post.images[0]}`
+                    : null
+                  return (
+                    <div key={post._id} className="profile-post-card">
+                      {imgSrc ? (
+                        <img className="post-card-img" src={imgSrc} alt={post.title} />
+                      ) : (
+                        <div className="post-card-img-placeholder" />
+                      )}
+                      <p className="post-card-title">{post.title}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </>
         )}
         {activeTab === 'saved' && <p className="profile-no-posts">No saved items yet.</p>}
         {activeTab === 'sold' && <p className="profile-no-posts">No archived items yet.</p>}
       </section>
+
+      {showNewPost && (
+        <NewPostModal
+          onClose={() => setShowNewPost(false)}
+          onCreated={(post) => setPosts((prev) => [post, ...prev])}
+        />
+      )}
     </div>
   )
 }
