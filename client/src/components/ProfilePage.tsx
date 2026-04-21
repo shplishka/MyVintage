@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import api from '../api/axiosInstance'
 import { useAuth } from '../context/AuthContext'
 import NewPostModal from './NewPostModal'
+import EditPostModal, { type PostData } from './EditPostModal'
+import PostDetailModal from './PostDetailModal'
 import './ProfilePage.css'
 
 interface User {
@@ -17,23 +19,19 @@ interface User {
   itemsSold?: number
 }
 
-interface Seller {
-  _id: string
-  username: string
-  profilePicture?: string | null
+type Post = PostData
+
+function conditionLabel(c: string) {
+  return c.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
 }
 
-interface Post {
-  _id: string
-  title: string
-  images: string[]
-  description?: string
-  price: number
-  category: string
-  condition: string
-  year: number
-  seller: Seller
-  createdAt: string
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  return `${Math.floor(hrs / 24)}d ago`
 }
 
 export default function ProfilePage() {
@@ -48,7 +46,10 @@ export default function ProfilePage() {
   const [loadingPosts, setLoadingPosts] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'listings' | 'saved' | 'sold'>('listings')
+
   const [showNewPost, setShowNewPost] = useState(false)
+  const [viewingPost, setViewingPost] = useState<Post | null>(null)
+  const [editingPost, setEditingPost] = useState<Post | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -67,6 +68,16 @@ export default function ProfilePage() {
       .catch(() => setPosts([]))
       .finally(() => setLoadingPosts(false))
   }, [userId])
+
+  function handlePostCreated(post: PostData) {
+    setPosts(prev => [post as Post, ...prev])
+  }
+
+  function handlePostUpdated(updated: PostData) {
+    setPosts(prev => prev.map(p => p._id === updated._id ? updated as Post : p))
+    setViewingPost(updated as Post)
+    setEditingPost(null)
+  }
 
   if (loadingUser) return <div className="profile-loading">Loading profile…</div>
   if (error || !user) return <div className="profile-error">{error ?? 'User not found.'}</div>
@@ -91,9 +102,7 @@ export default function ProfilePage() {
 
         <div className="profile-info">
           <h1 className="profile-username">{user.username}</h1>
-          {user.biography && (
-            <p className="profile-bio">{user.biography}</p>
-          )}
+          {user.biography && <p className="profile-bio">{user.biography}</p>}
           <div className="profile-meta">
             {user.location && (
               <>
@@ -178,20 +187,18 @@ export default function ProfilePage() {
                   const sellerAvatar = post.seller?.profilePicture
                     ? `${import.meta.env.VITE_API_URL}${post.seller.profilePicture}`
                     : null
-                  const conditionLabel = post.condition
-                    ? post.condition.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())
-                    : null
-                  const timeAgo = (() => {
-                    const diff = Date.now() - new Date(post.createdAt).getTime()
-                    const mins = Math.floor(diff / 60000)
-                    if (mins < 60) return `${mins}m ago`
-                    const hrs = Math.floor(mins / 60)
-                    if (hrs < 24) return `${hrs}h ago`
-                    const days = Math.floor(hrs / 24)
-                    return `${days}d ago`
-                  })()
+                  const label = conditionLabel(post.condition)
+                  const ago = timeAgo(post.createdAt)
+
                   return (
-                    <div key={post._id} className="profile-post-card">
+                    <div
+                      key={post._id}
+                      className="profile-post-card"
+                      onClick={() => setViewingPost(post)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => e.key === 'Enter' && setViewingPost(post)}
+                    >
                       {/* Image + overlays */}
                       <div className="post-card-img-wrap">
                         {imgSrc ? (
@@ -199,13 +206,32 @@ export default function ProfilePage() {
                         ) : (
                           <div className="post-card-img-placeholder" />
                         )}
-                        <button className="post-card-heart" aria-label="Save">
+
+                        {/* Edit pencil — owner only */}
+                        {isOwner && (
+                          <button
+                            className="post-card-edit"
+                            aria-label="Edit post"
+                            onClick={e => { e.stopPropagation(); setEditingPost(post) }}
+                          >
+                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                          </button>
+                        )}
+
+                        <button
+                          className="post-card-heart"
+                          aria-label="Save"
+                          onClick={e => e.stopPropagation()}
+                        >
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                           </svg>
                         </button>
+
                         <div className="post-card-badges">
-                          {conditionLabel && <span className="post-card-badge">{conditionLabel}</span>}
+                          <span className="post-card-badge">{label}</span>
                           {post.year && <span className="post-card-badge">{post.year}s</span>}
                         </div>
                       </div>
@@ -216,11 +242,9 @@ export default function ProfilePage() {
                           <p className="post-card-title">{post.title}</p>
                           <span className="post-card-price">${post.price}</span>
                         </div>
-                        {post.category && (
-                          <p className="post-card-category">
-                            {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
-                          </p>
-                        )}
+                        <p className="post-card-category">
+                          {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
+                        </p>
                         <div className="post-card-seller-row">
                           {sellerAvatar ? (
                             <img className="post-card-avatar" src={sellerAvatar} alt={post.seller.username} />
@@ -246,7 +270,7 @@ export default function ProfilePage() {
                               {user.location}
                             </span>
                           )}
-                          <span className="post-card-time">{timeAgo}</span>
+                          <span className="post-card-time">{ago}</span>
                         </div>
                       </div>
                     </div>
@@ -260,10 +284,30 @@ export default function ProfilePage() {
         {activeTab === 'sold' && <p className="profile-no-posts">No archived items yet.</p>}
       </section>
 
+      {/* ── Modals ── */}
       {showNewPost && (
         <NewPostModal
           onClose={() => setShowNewPost(false)}
-          onCreated={(post) => setPosts((prev) => [post as unknown as Post, ...prev])}
+          onCreated={handlePostCreated}
+        />
+      )}
+
+      {viewingPost && !editingPost && (
+        <PostDetailModal
+          post={viewingPost}
+          sellerRating={user.rating ?? 0}
+          sellerLocation={user.location ?? null}
+          isOwner={isOwner}
+          onClose={() => setViewingPost(null)}
+          onEdit={() => { setEditingPost(viewingPost); setViewingPost(null) }}
+        />
+      )}
+
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onUpdated={handlePostUpdated}
         />
       )}
     </div>
