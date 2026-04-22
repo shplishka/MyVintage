@@ -1,0 +1,26 @@
+/* Camera overlay on image hover */
+.npm-image-zone:hover .epm-img-overlay {
+  opacity: 1;
+}
+
+.epm-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.38);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.18s;
+  pointer-events: none;
+}
+
+.epm-img-overlay svg {
+  width: 28px;
+  height: 28px;
+}
