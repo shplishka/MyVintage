@@ -477,3 +477,31 @@
 .post-card-time {
   margin-left: auto;
 }
+
+/* ── Comments link ── */
+.post-card-comments-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b4513;
+  cursor: pointer;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.post-card-comments-link svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.post-card-comments-link:hover {
+  color: #6d3410;
+  text-decoration: underline;
+}
