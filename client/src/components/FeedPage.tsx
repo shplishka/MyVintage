@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axiosInstance'
 import { useAuth } from '../context/AuthContext'
+import PostDetailModal from './PostDetailModal'
+import EditPostModal, { type PostData } from './EditPostModal'
 import './FeedPage.css'
 
 /* ── Types ── */
@@ -19,6 +21,8 @@ interface FeedPost {
   price: number
   condition: string
   year: number
+  brand: string
+  style: string
   images: string[]
   likesCount: number
   commentsCount: number
@@ -47,6 +51,8 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('')
   const [likeState, setLikeState] = useState<Record<string, { liked: boolean; count: number }>>({})
+  const [viewingPost, setViewingPost] = useState<FeedPost | null>(null)
+  const [editingPost, setEditingPost] = useState<PostData | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -173,10 +179,10 @@ export default function FeedPage() {
                 <article
                   key={post._id}
                   className="feed-card"
-                  onClick={() => navigate(`/posts/${post._id}/comments`)}
+                  onClick={() => setViewingPost(post)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={e => e.key === 'Enter' && navigate(`/posts/${post._id}/comments`)}
+                  onKeyDown={e => e.key === 'Enter' && setViewingPost(post)}
                 >
                   {/* Image */}
                   <div className="feed-card-img-wrap">
@@ -250,6 +256,29 @@ export default function FeedPage() {
           </div>
         )}
       </section>
+
+      {/* ── Modals ── */}
+      {viewingPost && !editingPost && (
+        <PostDetailModal
+          post={viewingPost as unknown as PostData}
+          sellerRating={0}
+          sellerLocation={null}
+          isOwner={authUser?._id === viewingPost.seller._id}
+          onClose={() => setViewingPost(null)}
+          onEdit={() => { setEditingPost(viewingPost as unknown as PostData); setViewingPost(null) }}
+        />
+      )}
+
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onUpdated={(updated) => {
+            setPosts(prev => prev.map(p => p._id === updated._id ? { ...p, ...updated } : p))
+            setEditingPost(null)
+          }}
+        />
+      )}
     </div>
   )
 }

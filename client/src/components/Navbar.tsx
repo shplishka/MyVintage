@@ -1,19 +1,15 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './Navbar.css'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const avatarSrc = user?.profilePicture
+const avatarSrc = user?.profilePicture
     ? `${import.meta.env.VITE_API_URL}${user.profilePicture}`
     : null
 
-  const isHome = location.pathname === '/'
-
-  return (
+return (
     <header className="navbar">
       {/* Logo */}
       <button className="navbar-logo" onClick={() => navigate('/')} aria-label="Home">
@@ -22,13 +18,6 @@ export default function Navbar() {
 
       {/* Center nav */}
       <nav className="navbar-nav" aria-label="Main navigation">
-        <button
-          className={`navbar-nav-link${isHome ? ' navbar-nav-link--active' : ''}`}
-          onClick={() => navigate('/')}
-        >
-          Home
-        </button>
-
         <button className="navbar-nav-link" onClick={() => navigate('/')}>
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
