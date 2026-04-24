@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
-import Post from '../models/Post';
+import Post, { PostStatus } from '../models/Post';
+import Offer from '../models/Offer';
+import { OfferStatus } from '../types/marketplace';
 import Like from '../models/Like';
 const MAX_POST_IMAGES = parseInt(process.env.MAX_POST_IMAGES ?? '10', 10);
 
@@ -26,7 +28,13 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
     const filter: Record<string, unknown> = {};
     if (category)  filter.category  = category;
     if (condition) filter.condition = condition;
-    if (status)    filter.status    = status;
+
+    // Only show active posts by default; callers can pass ?status=sold (or any
+    // valid PostStatus value) to fetch items with a different status.
+    filter.status = Object.values(PostStatus).includes(status as PostStatus)
+        ? status
+        : PostStatus.Active;
+
     if (minPrice || maxPrice) {
         filter.price = {};
         if (minPrice) (filter.price as Record<string, unknown>).$gte = Number(minPrice);
@@ -89,6 +97,16 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
 
     if (post.seller.toString() !== req.jwtUser!.userId) {
         res.status(403).json({ message: 'Forbidden: you are not the seller of this post' });
+        return;
+    }
+
+    const blockedOffer = await Offer.exists({
+        sale:   post._id,
+        status: { $in: [OfferStatus.Pending, OfferStatus.Accepted] },
+    });
+
+    if (blockedOffer) {
+        res.status(409).json({ message: 'Cancel all pending and accepted offers before deleting this post.' });
         return;
     }
 
