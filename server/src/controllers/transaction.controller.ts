@@ -3,7 +3,6 @@ import Transaction from '../models/Transaction';
 import Offer from '../models/Offer';
 import Post, { PostStatus } from '../models/Post';
 import { OfferStatus, TransactionStatus } from '../types/marketplace';
-import Offer from '../models/Offer';
 
 const POPULATE_SALE   = { path: 'sale',   select: 'title images price status' };
 const POPULATE_BUYER  = { path: 'buyer',  select: 'username profilePicture'   };
