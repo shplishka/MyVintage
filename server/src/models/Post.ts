@@ -45,6 +45,7 @@ export interface IPost extends Document {
     /** Running count of how many times this sale has been viewed. */
     viewsCount:    number;
     likesCount:    number;
+    savesCount:    number;
     commentsCount: number;
     createdAt:     Date;
     updatedAt:     Date;
@@ -74,6 +75,7 @@ const PostSchema = new Schema<IPost>(
         soldAt:        { type: Date, default: null },
         viewsCount:    { type: Number, default: 0, min: 0 },
         likesCount:    { type: Number, default: 0 },
+        savesCount:    { type: Number, default: 0, min: 0 },
         commentsCount: { type: Number, default: 0 },
     },
     { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } }

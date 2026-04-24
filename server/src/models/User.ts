@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
@@ -11,6 +11,8 @@ export interface IUser extends Document {
     rating?: number;
     reviewCount?: number;
     itemsSold?: number;
+    /** Posts the user has bookmarked. */
+    savedPosts: Types.ObjectId[];
     comparePassword(candidate: string): Promise<boolean>;
 }
 
@@ -25,9 +27,14 @@ const UserSchema = new Schema<IUser>(
         rating:         { type: Number, default: 0, min: 0, max: 5 },
         reviewCount:    { type: Number, default: 0, min: 0 },
         itemsSold:      { type: Number, default: 0, min: 0 },
+        savedPosts:     { type: [Schema.Types.ObjectId], ref: 'Post', default: [] },
     },
     { timestamps: true }
 );
+
+// Allows fast lookup of "which users saved post X" and efficient
+// membership checks when toggling a save.
+UserSchema.index({ savedPosts: 1 });
 
 UserSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) return;
