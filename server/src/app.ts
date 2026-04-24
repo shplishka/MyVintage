@@ -9,6 +9,7 @@ import postRoutes from './routes/post.routes';
 import userRoutes from './routes/user.routes';
 import commentRoutes from './routes/comment.routes';
 import offerRoutes from './routes/offer.routes';
+import transactionRoutes from './routes/transaction.routes';
 import swaggerSpec from './config/swagger';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts',  postRoutes);
 app.use('/api/posts',  offerRoutes);   // POST /api/posts/:postId/offers
 app.use('/api/offers', offerRoutes);   // GET  /api/offers/received|sent  PATCH /api/offers/:id/accept|decline|cancel
+app.use('/api/transactions', transactionRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);

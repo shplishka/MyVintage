@@ -43,6 +43,7 @@ export enum TransactionStatus {
     Pending   = 'pending',
     Completed = 'completed',
     Cancelled = 'cancelled',
+    Disputed  = 'disputed',
 }
 
 /**
