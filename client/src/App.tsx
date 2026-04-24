@@ -3,6 +3,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import ProfilePage from './components/ProfilePage'
 import EditProfilePage from './components/EditProfilePage'
+import CommentsPage from './components/CommentsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 
@@ -18,6 +19,8 @@ export default function App() {
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/profile/:userId/edit" element={<EditProfilePage />} />
           </Route>
+          {/* CommentsPage has its own top bar — rendered outside the shared Layout */}
+          <Route path="/posts/:postId/comments" element={<CommentsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

@@ -16,6 +16,7 @@ export interface PostData {
   images: string[]
   seller: { _id: string; username: string; profilePicture?: string | null }
   createdAt: string
+  commentsCount: number
 }
 
 interface Props {
