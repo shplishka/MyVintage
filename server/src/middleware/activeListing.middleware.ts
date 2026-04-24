@@ -32,6 +32,11 @@ export const requireActiveListing = async (
         return;
     }
 
+    if (post.status === PostStatus.Pending) {
+        res.status(409).json({ message: 'This item already has an accepted offer and is no longer taking new offers.' });
+        return;
+    }
+
     if (post.status !== PostStatus.Active) {
         res.status(409).json({ message: 'This item is not available for offers.' });
         return;

@@ -19,8 +19,9 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use('/media', express.static(path.join(__dirname, '../public')));
 app.use('/api/auth', authRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/posts', offerRoutes);
+app.use('/api/posts',  postRoutes);
+app.use('/api/posts',  offerRoutes);   // POST /api/posts/:postId/offers
+app.use('/api/offers', offerRoutes);   // GET  /api/offers/received|sent  PATCH /api/offers/:id/accept|decline|cancel
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
