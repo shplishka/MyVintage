@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import type { IPost } from '../models/Post';
 
 export interface JwtPayload {
     userId: string;
@@ -10,6 +11,8 @@ declare global {
     namespace Express {
         interface Request {
             jwtUser?: JwtPayload;
+            /** Populated by requireActiveListing middleware. */
+            post?: IPost;
         }
     }
 }

@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes';
 import postRoutes from './routes/post.routes';
 import userRoutes from './routes/user.routes';
 import commentRoutes from './routes/comment.routes';
+import offerRoutes from './routes/offer.routes';
 import swaggerSpec from './config/swagger';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/media', express.static(path.join(__dirname, '../public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/posts', offerRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
