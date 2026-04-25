@@ -67,9 +67,6 @@ const PostSchema = new Schema<IPost>(
             type:    String,
             enum:    Object.values(PostStatus),
             default: PostStatus.Active,
-            // Documents written before this field existed have no stored value.
-            // The getter returns 'active' for them so callers never see undefined.
-            get:     (v: string | undefined) => v ?? PostStatus.Active,
         },
         buyer:         { type: Schema.Types.ObjectId, ref: 'User', default: null },
         soldAt:        { type: Date, default: null },
@@ -80,6 +77,10 @@ const PostSchema = new Schema<IPost>(
     },
     { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } }
 );
+
+// Documents written before the status field existed have no stored value.
+// The getter returns 'active' for them so callers never see undefined.
+PostSchema.path('status').get((v: string | undefined) => v ?? PostStatus.Active);
 
 // Index for fast filtering by sale status (active / sold).
 PostSchema.index({ status: 1 });

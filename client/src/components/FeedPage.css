@@ -287,11 +287,53 @@
   color: #c8b8a8;
 }
 
-/* Heart button */
-.feed-card-heart {
+/* Actions column (bookmark + heart) */
+.feed-card-actions {
   position: absolute;
   top: 8px;
   right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Bookmark button */
+.feed-card-bookmark {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  padding: 0;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.feed-card-bookmark svg {
+  width: 16px;
+  height: 16px;
+  color: #9c7a5a;
+}
+
+.feed-card-bookmark:hover {
+  background: #fff;
+  transform: scale(1.1);
+}
+
+.feed-card-bookmark--saved svg {
+  color: #8b4513;
+}
+
+.feed-card-bookmark:hover svg {
+  color: #8b4513;
+}
+
+/* Heart button */
+.feed-card-heart {
   width: 32px;
   height: 32px;
   border-radius: 50%;

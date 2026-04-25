@@ -305,8 +305,8 @@
   background: #fff;
 }
 
-/* ── Heart button ── */
-.post-card-heart {
+/* ── Bookmark button ── */
+.post-card-bookmark {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -321,16 +321,26 @@
   cursor: pointer;
   padding: 0;
   backdrop-filter: blur(4px);
+  transition: background 0.15s, transform 0.12s;
 }
 
-.post-card-heart svg {
+.post-card-bookmark svg {
   width: 16px;
   height: 16px;
   color: #9c7a5a;
 }
 
-.post-card-heart:hover svg {
-  color: #c0392b;
+.post-card-bookmark:hover {
+  background: #fff;
+  transform: scale(1.1);
+}
+
+.post-card-bookmark--saved svg {
+  color: #8b4513;
+}
+
+.post-card-bookmark:hover svg {
+  color: #8b4513;
 }
 
 /* ── Condition / year badges ── */
@@ -504,4 +514,44 @@
 .post-card-comments-link:hover {
   color: #6d3410;
   text-decoration: underline;
+}
+
+/* ── Saved tab empty state ── */
+.profile-saved-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 64px 0;
+  color: #9c7a5a;
+}
+
+.profile-saved-empty svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+}
+
+.profile-saved-empty p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ── Save toast (error notification) ── */
+.save-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #c0392b;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
