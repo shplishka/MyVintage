@@ -21,6 +21,7 @@ export enum Condition {
 
 export enum PostStatus {
     Active   = 'active',
+    Pending  = 'pending',   // an offer has been accepted; awaiting transaction completion
     Sold     = 'sold',
     Inactive = 'inactive',
 }
@@ -37,7 +38,14 @@ export interface IPost extends Document {
     style:         string;
     images:        string[];
     status:        PostStatus;
+    /** The user who purchased this item. Set when status transitions to Sold. */
+    buyer?:        Types.ObjectId;
+    /** Timestamp of when the item was sold. Set when status transitions to Sold. */
+    soldAt?:       Date;
+    /** Running count of how many times this sale has been viewed. */
+    viewsCount:    number;
     likesCount:    number;
+    savesCount:    number;
     commentsCount: number;
     createdAt:     Date;
     updatedAt:     Date;
@@ -55,11 +63,26 @@ const PostSchema = new Schema<IPost>(
         brand:         { type: String, required: true, trim: true },
         style:         { type: String, required: true, trim: true },
         images:        { type: [String], default: [] },
-        status:        { type: String, enum: Object.values(PostStatus), default: PostStatus.Active },
+        status:        {
+            type:    String,
+            enum:    Object.values(PostStatus),
+            default: PostStatus.Active,
+        },
+        buyer:         { type: Schema.Types.ObjectId, ref: 'User', default: null },
+        soldAt:        { type: Date, default: null },
+        viewsCount:    { type: Number, default: 0, min: 0 },
         likesCount:    { type: Number, default: 0 },
+        savesCount:    { type: Number, default: 0, min: 0 },
         commentsCount: { type: Number, default: 0 },
     },
-    { timestamps: true }
+    { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } }
 );
+
+// Documents written before the status field existed have no stored value.
+// The getter returns 'active' for them so callers never see undefined.
+PostSchema.path('status').get((v: string | undefined) => v ?? PostStatus.Active);
+
+// Index for fast filtering by sale status (active / sold).
+PostSchema.index({ status: 1 });
 
 export default mongoose.model<IPost>('Post', PostSchema);

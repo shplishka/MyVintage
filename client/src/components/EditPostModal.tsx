@@ -17,6 +17,9 @@ export interface PostData {
   seller: { _id: string; username: string; profilePicture?: string | null }
   createdAt: string
   commentsCount: number
+  savesCount?: number
+  /** Whether the currently logged-in user has saved this post. */
+  saved?: boolean
 }
 
 interface Props {

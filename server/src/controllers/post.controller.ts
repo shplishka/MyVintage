@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
-import Post from '../models/Post';
+import Post, { PostStatus } from '../models/Post';
+import Offer from '../models/Offer';
+import { OfferStatus } from '../types/marketplace';
 import Like from '../models/Like';
+import User from '../models/User';
 const MAX_POST_IMAGES = parseInt(process.env.MAX_POST_IMAGES ?? '10', 10);
 
 export const createPost = async (req: Request, res: Response): Promise<void> => {
@@ -26,15 +29,36 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
     const filter: Record<string, unknown> = {};
     if (category)  filter.category  = category;
     if (condition) filter.condition = condition;
-    if (status)    filter.status    = status;
+
+    // Only show active posts by default; callers can pass ?status=sold (or any
+    // valid PostStatus value) to fetch items with a different status.
+    filter.status = Object.values(PostStatus).includes(status as PostStatus)
+        ? status
+        : PostStatus.Active;
+
     if (minPrice || maxPrice) {
         filter.price = {};
         if (minPrice) (filter.price as Record<string, unknown>).$gte = Number(minPrice);
         if (maxPrice) (filter.price as Record<string, unknown>).$lte = Number(maxPrice);
     }
 
-    const posts = await Post.find(filter).populate('seller', 'username profilePicture').sort({ createdAt: -1 });
-    res.json(posts);
+    // Single extra query when authenticated — avoids N+1 per post.
+    const savedSet = new Set<string>();
+    if (req.jwtUser) {
+        const userDoc = await User.findById(req.jwtUser.userId).select('savedPosts');
+        userDoc?.savedPosts.forEach(id => savedSet.add(id.toString()));
+    }
+
+    const posts = await Post.find(filter)
+        .populate('seller', 'username profilePicture')
+        .sort({ createdAt: -1 });
+
+    const result = posts.map(p => ({
+        ...p.toObject(),
+        isSaved: savedSet.has(p._id.toString()),
+    }));
+
+    res.json(result);
 };
 
 export const getPostsByUser = async (req: Request, res: Response): Promise<void> => {
@@ -89,6 +113,16 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
 
     if (post.seller.toString() !== req.jwtUser!.userId) {
         res.status(403).json({ message: 'Forbidden: you are not the seller of this post' });
+        return;
+    }
+
+    const blockedOffer = await Offer.exists({
+        sale:   post._id,
+        status: { $in: [OfferStatus.Pending, OfferStatus.Accepted] },
+    });
+
+    if (blockedOffer) {
+        res.status(409).json({ message: 'Cancel all pending and accepted offers before deleting this post.' });
         return;
     }
 
@@ -159,4 +193,71 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         );
         res.json({ liked: true, likesCount: updated!.likesCount });
     }
+};
+
+export const toggleSave = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.jwtUser!.userId;
+    const postId = req.params.id;
+
+    const postExists = await Post.exists({ _id: postId });
+    if (!postExists) {
+        res.status(404).json({ message: 'Post not found' });
+        return;
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+
+    const alreadySaved = user.savedPosts.some(id => id.toString() === postId);
+
+    if (alreadySaved) {
+        const [, updated] = await Promise.all([
+            User.findByIdAndUpdate(userId, { $pull: { savedPosts: postId } }),
+            Post.findByIdAndUpdate(postId, { $inc: { savesCount: -1 } }, { new: true }),
+        ]);
+        res.json({ saved: false, savesCount: updated!.savesCount });
+    } else {
+        const [, updated] = await Promise.all([
+            User.findByIdAndUpdate(userId, { $addToSet: { savedPosts: postId } }),
+            Post.findByIdAndUpdate(postId, { $inc: { savesCount: 1 } }, { new: true }),
+        ]);
+        res.json({ saved: true, savesCount: updated!.savesCount });
+    }
+};
+
+export const getSavedPosts = async (req: Request, res: Response): Promise<void> => {
+    const page  = Math.max(1, parseInt(req.query.page  as string, 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
+
+    // Fetch only the savedPosts array — no need to hydrate the full user document.
+    const user = await User.findById(req.jwtUser!.userId).select('savedPosts');
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+
+    // Reverse so index 0 = most recently saved (array is append-ordered).
+    const allIds   = [...user.savedPosts].reverse();
+    const total    = allIds.length;
+    const pagedIds = allIds.slice((page - 1) * limit, page * limit);
+
+    const posts = await Post.find({ _id: { $in: pagedIds } })
+        .populate('seller', 'username profilePicture');
+
+    // $in does not preserve insertion order — restore saved-recency ordering.
+    const indexMap = new Map(pagedIds.map((id, i) => [id.toString(), i]));
+    posts.sort((a, b) => indexMap.get(a._id.toString())! - indexMap.get(b._id.toString())!);
+
+    res.json({
+        data: posts,
+        pagination: {
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+        },
+    });
 };

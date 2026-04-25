@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../api/axiosInstance'
 import { useAuth } from '../context/AuthContext'
 import EditPostModal, { type PostData } from './EditPostModal'
 import PostDetailModal from './PostDetailModal'
+import { useSavePost } from '../hooks/useSavePost'
 import './ProfilePage.css'
 
 interface User {
@@ -33,6 +34,134 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
+/* ── ProfilePostCard ── */
+interface ProfilePostCardProps {
+  post: Post
+  user: User
+  isOwner: boolean
+  initialSaved: boolean
+  onView: (post: Post) => void
+  onEdit: (post: Post) => void
+}
+
+function ProfilePostCard({ post, user, isOwner, initialSaved, onView, onEdit }: ProfilePostCardProps) {
+  const navigate = useNavigate()
+  const { saved, toggleSave, error } = useSavePost(post._id, initialSaved)
+
+  const imgSrc = post.images?.[0]
+    ? `${import.meta.env.VITE_API_URL}${post.images[0]}`
+    : null
+  const sellerAvatar = post.seller?.profilePicture
+    ? `${import.meta.env.VITE_API_URL}${post.seller.profilePicture}`
+    : null
+  const label = conditionLabel(post.condition)
+  const ago = timeAgo(post.createdAt)
+
+  return (
+    <div
+      className="profile-post-card"
+      onClick={() => onView(post)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => e.key === 'Enter' && onView(post)}
+    >
+      {error && (
+        <div className="save-toast" role="alert">{error}</div>
+      )}
+
+      {/* Image + overlays */}
+      <div className="post-card-img-wrap">
+        {imgSrc ? (
+          <img className="post-card-img" src={imgSrc} alt={post.title} />
+        ) : (
+          <div className="post-card-img-placeholder" />
+        )}
+
+        {isOwner && (
+          <button
+            className="post-card-edit"
+            aria-label="Edit post"
+            onClick={e => { e.stopPropagation(); onEdit(post) }}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+          </button>
+        )}
+
+        <button
+          className={`post-card-bookmark${saved ? ' post-card-bookmark--saved' : ''}`}
+          aria-label={saved ? 'Unsave' : 'Save'}
+          onClick={toggleSave}
+        >
+          {saved ? (
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6.75 3A2.25 2.25 0 004.5 5.25v15.75l7.5-3.75 7.5 3.75V5.25A2.25 2.25 0 0017.25 3H6.75z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+            </svg>
+          )}
+        </button>
+
+        <div className="post-card-badges">
+          <span className="post-card-badge">{label}</span>
+          {post.year && <span className="post-card-badge">{post.year}s</span>}
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="post-card-info">
+        <div className="post-card-title-row">
+          <p className="post-card-title">{post.title}</p>
+          <span className="post-card-price">${post.price}</span>
+        </div>
+        <p className="post-card-category">
+          {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
+        </p>
+        <div className="post-card-seller-row">
+          {sellerAvatar ? (
+            <img className="post-card-avatar" src={sellerAvatar} alt={post.seller.username} />
+          ) : (
+            <div className="post-card-avatar-placeholder">
+              {post.seller?.username?.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="post-card-seller-name">{post.seller?.username}</span>
+          <span className="post-card-rating">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            {(user.rating ?? 0).toFixed(1)}
+          </span>
+        </div>
+        <div className="post-card-meta-row">
+          {user.location && (
+            <span className="post-card-location">
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              {user.location}
+            </span>
+          )}
+          <span className="post-card-time">{ago}</span>
+        </div>
+        <button
+          className="post-card-comments-link"
+          onClick={e => { e.stopPropagation(); navigate(`/posts/${post._id}/comments`) }}
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+          </svg>
+          {post.commentsCount === 1 ? '1 comment' : `${post.commentsCount ?? 0} comments`}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* ── ProfilePage ── */
 export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>()
   const navigate = useNavigate()
@@ -49,6 +178,14 @@ export default function ProfilePage() {
   const [viewingPost, setViewingPost] = useState<Post | null>(null)
   const [editingPost, setEditingPost] = useState<Post | null>(null)
 
+  /* ── Saved tab state ── */
+  const [savedPosts, setSavedPosts] = useState<Post[]>([])
+  const [savedPage, setSavedPage] = useState(1)
+  const [savedHasMore, setSavedHasMore] = useState(true)
+  const [savedLoading, setSavedLoading] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  /* ── Load user + sells posts ── */
   useEffect(() => {
     if (!userId) return
 
@@ -66,6 +203,45 @@ export default function ProfilePage() {
       .catch(() => setPosts([]))
       .finally(() => setLoadingPosts(false))
   }, [userId])
+
+  /* ── Reset saved state when switching to the Saved tab ── */
+  useEffect(() => {
+    if (activeTab !== 'saved') return
+    setSavedPosts([])
+    setSavedPage(1)
+    setSavedHasMore(true)
+  }, [activeTab])
+
+  /* ── Fetch saved posts whenever page or tab changes ── */
+  useEffect(() => {
+    if (activeTab !== 'saved' || !isOwner) return
+    setSavedLoading(true)
+    api
+      .get<{ data: Post[]; pagination: { page: number; pages: number } }>(
+        `/api/posts/saved?page=${savedPage}&limit=20`
+      )
+      .then(({ data }) => {
+        setSavedPosts(prev => (savedPage === 1 ? data.data : [...prev, ...data.data]))
+        setSavedHasMore(data.pagination.page < data.pagination.pages)
+      })
+      .catch(() => {})
+      .finally(() => setSavedLoading(false))
+  }, [activeTab, savedPage, isOwner])
+
+  /* ── Infinite scroll: observe sentinel at bottom of saved grid ── */
+  useEffect(() => {
+    if (activeTab !== 'saved' || !savedHasMore || savedLoading) return
+    const sentinel = sentinelRef.current
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setSavedPage(p => p + 1)
+      }
+    })
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [activeTab, savedHasMore, savedLoading])
 
   function handlePostUpdated(updated: PostData) {
     setPosts(prev => prev.map(p => p._id === updated._id ? updated as Post : p))
@@ -157,125 +333,66 @@ export default function ProfilePage() {
 
       {/* ── Tab content ── */}
       <section className="profile-posts-section">
+
+        {/* Sells tab */}
         {activeTab === 'sells' && (
           <>
-
             {loadingPosts ? (
               <p className="profile-posts-loading">Loading posts…</p>
             ) : posts.length === 0 ? (
               <p className="profile-no-posts">no posts yet</p>
             ) : (
               <div className="profile-posts-grid">
-                {posts.map((post) => {
-                  const imgSrc = post.images?.[0]
-                    ? `${import.meta.env.VITE_API_URL}${post.images[0]}`
-                    : null
-                  const sellerAvatar = post.seller?.profilePicture
-                    ? `${import.meta.env.VITE_API_URL}${post.seller.profilePicture}`
-                    : null
-                  const label = conditionLabel(post.condition)
-                  const ago = timeAgo(post.createdAt)
-
-                  return (
-                    <div
-                      key={post._id}
-                      className="profile-post-card"
-                      onClick={() => setViewingPost(post)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => e.key === 'Enter' && setViewingPost(post)}
-                    >
-                      {/* Image + overlays */}
-                      <div className="post-card-img-wrap">
-                        {imgSrc ? (
-                          <img className="post-card-img" src={imgSrc} alt={post.title} />
-                        ) : (
-                          <div className="post-card-img-placeholder" />
-                        )}
-
-                        {/* Edit pencil — owner only */}
-                        {isOwner && (
-                          <button
-                            className="post-card-edit"
-                            aria-label="Edit post"
-                            onClick={e => { e.stopPropagation(); setEditingPost(post) }}
-                          >
-                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                            </svg>
-                          </button>
-                        )}
-
-                        <button
-                          className="post-card-heart"
-                          aria-label="Save"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                        </button>
-
-                        <div className="post-card-badges">
-                          <span className="post-card-badge">{label}</span>
-                          {post.year && <span className="post-card-badge">{post.year}s</span>}
-                        </div>
-                      </div>
-
-                      {/* Info */}
-                      <div className="post-card-info">
-                        <div className="post-card-title-row">
-                          <p className="post-card-title">{post.title}</p>
-                          <span className="post-card-price">${post.price}</span>
-                        </div>
-                        <p className="post-card-category">
-                          {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
-                        </p>
-                        <div className="post-card-seller-row">
-                          {sellerAvatar ? (
-                            <img className="post-card-avatar" src={sellerAvatar} alt={post.seller.username} />
-                          ) : (
-                            <div className="post-card-avatar-placeholder">
-                              {post.seller?.username?.charAt(0).toUpperCase()}
-                            </div>
-                          )}
-                          <span className="post-card-seller-name">{post.seller?.username}</span>
-                          <span className="post-card-rating">
-                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            {(user.rating ?? 0).toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="post-card-meta-row">
-                          {user.location && (
-                            <span className="post-card-location">
-                              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                              </svg>
-                              {user.location}
-                            </span>
-                          )}
-                          <span className="post-card-time">{ago}</span>
-                        </div>
-                        <button
-                          className="post-card-comments-link"
-                          onClick={e => { e.stopPropagation(); navigate(`/posts/${post._id}/comments`) }}
-                        >
-                          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
-                          </svg>
-                          {post.commentsCount === 1 ? '1 comment' : `${post.commentsCount ?? 0} comments`}
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
+                {posts.map(post => (
+                  <ProfilePostCard
+                    key={post._id}
+                    post={post}
+                    user={user}
+                    isOwner={isOwner}
+                    initialSaved={post.saved ?? false}
+                    onView={setViewingPost}
+                    onEdit={setEditingPost}
+                  />
+                ))}
               </div>
             )}
           </>
         )}
-        {activeTab === 'saved' && <p className="profile-no-posts">No saved items yet.</p>}
+
+        {/* Saved tab */}
+        {activeTab === 'saved' && (
+          <>
+            {!isOwner ? (
+              <p className="profile-no-posts">This tab is private.</p>
+            ) : savedPosts.length === 0 && !savedLoading ? (
+              <div className="profile-saved-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                </svg>
+                <p>No saved items yet</p>
+              </div>
+            ) : (
+              <>
+                <div className="profile-posts-grid">
+                  {savedPosts.map(post => (
+                    <ProfilePostCard
+                      key={post._id}
+                      post={post}
+                      user={user}
+                      isOwner={false}
+                      initialSaved={true}
+                      onView={setViewingPost}
+                      onEdit={setEditingPost}
+                    />
+                  ))}
+                </div>
+                {savedLoading && <p className="profile-posts-loading">Loading more…</p>}
+                <div ref={sentinelRef} style={{ height: 1 }} />
+              </>
+            )}
+          </>
+        )}
+
         {activeTab === 'sold' && <p className="profile-no-posts">No archived items yet.</p>}
       </section>
 
