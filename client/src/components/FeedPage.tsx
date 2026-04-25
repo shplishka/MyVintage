@@ -28,6 +28,7 @@ interface FeedPost {
   commentsCount: number
   seller: Seller
   createdAt: string
+  isSaved?: boolean
 }
 
 /* ── Categories ── */
@@ -51,6 +52,8 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('')
   const [likeState, setLikeState] = useState<Record<string, { liked: boolean; count: number }>>({})
+  const [saveState, setSaveState] = useState<Record<string, { saved: boolean }>>({})
+  const [feedSaveError, setFeedSaveError] = useState<string | null>(null)
   const [viewingPost, setViewingPost] = useState<FeedPost | null>(null)
   const [editingPost, setEditingPost] = useState<PostData | null>(null)
 
@@ -60,9 +63,14 @@ export default function FeedPage() {
     api.get<FeedPost[]>(`/api/posts${params}`)
       .then(({ data }) => {
         setPosts(data)
-        const seed: Record<string, { liked: boolean; count: number }> = {}
-        data.forEach(p => { seed[p._id] = { liked: false, count: p.likesCount } })
-        setLikeState(prev => ({ ...seed, ...prev }))
+        const likeSeed: Record<string, { liked: boolean; count: number }> = {}
+        const saveSeed: Record<string, { saved: boolean }> = {}
+        data.forEach(p => {
+          likeSeed[p._id] = { liked: false, count: p.likesCount }
+          saveSeed[p._id] = { saved: p.isSaved ?? false }
+        })
+        setLikeState(prev => ({ ...likeSeed, ...prev }))
+        setSaveState(prev => ({ ...saveSeed, ...prev }))
       })
       .catch(() => setPosts([]))
       .finally(() => setLoading(false))
@@ -82,8 +90,26 @@ export default function FeedPage() {
     }
   }
 
+  async function toggleSave(postId: string, e: React.MouseEvent) {
+    e.stopPropagation()
+    const current = saveState[postId]
+    if (!current) return
+    setSaveState(prev => ({ ...prev, [postId]: { saved: !current.saved } }))
+    try {
+      const { data } = await api.post<{ saved: boolean; savesCount: number }>(`/api/posts/${postId}/save`)
+      setSaveState(prev => ({ ...prev, [postId]: { saved: data.saved } }))
+    } catch {
+      setSaveState(prev => ({ ...prev, [postId]: current }))
+      setFeedSaveError('Could not save post. Please try again.')
+      setTimeout(() => setFeedSaveError(null), 3000)
+    }
+  }
+
   return (
     <div className="feed-page">
+      {feedSaveError && (
+        <div className="save-toast" role="alert">{feedSaveError}</div>
+      )}
 
       {/* ── Hero ── */}
       <section className="feed-hero">
@@ -174,6 +200,7 @@ export default function FeedPage() {
                 ? `${import.meta.env.VITE_API_URL}${post.seller.profilePicture}`
                 : null
               const like = likeState[post._id] ?? { liked: false, count: post.likesCount }
+              const save = saveState[post._id] ?? { saved: post.isSaved ?? false }
 
               return (
                 <article
@@ -196,16 +223,35 @@ export default function FeedPage() {
                       </div>
                     )}
 
+                    {/* Actions: bookmark + heart */}
+                    <div className="feed-card-actions">
+                      <button
+                        className={`feed-card-bookmark${save.saved ? ' feed-card-bookmark--saved' : ''}`}
+                        onClick={e => toggleSave(post._id, e)}
+                        aria-label={save.saved ? 'Unsave' : 'Save'}
+                      >
+                        {save.saved ? (
+                          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M6.75 3A2.25 2.25 0 004.5 5.25v15.75l7.5-3.75 7.5 3.75V5.25A2.25 2.25 0 0017.25 3H6.75z" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                          </svg>
+                        )}
+                      </button>
+
                     {/* Heart */}
                     <button
                       className={`feed-card-heart${like.liked ? ' feed-card-heart--liked' : ''}`}
                       onClick={e => toggleLike(post._id, e)}
-                      aria-label={like.liked ? 'Unlike' : 'Save'}
+                      aria-label={like.liked ? 'Unlike' : 'Like'}
                     >
                       <svg viewBox="0 0 24 24" fill={like.liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                     </button>
+                    </div>
                   </div>
 
                   {/* Info */}
