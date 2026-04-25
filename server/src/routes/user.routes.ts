@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllUsers, getUserById, updateUser, deleteUser, uploadProfilePicture } from '../controllers/user.controller';
+import { getAllUsers, searchUsers, getUserById, updateUser, deleteUser, uploadProfilePicture } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { uploadProfilePicture as profilePictureUpload } from '../middleware/upload.middleware';
 
@@ -29,6 +29,8 @@ const router = Router();
  *                 $ref: '#/components/schemas/User'
  */
 router.get('/', getAllUsers);
+
+router.get('/search', searchUsers);
 
 /**
  * @swagger
