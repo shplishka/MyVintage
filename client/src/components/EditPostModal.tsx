@@ -14,6 +14,7 @@ export interface PostData {
   brand: string
   style: string
   images: string[]
+  status?: string
   seller: { _id: string; username: string; profilePicture?: string | null }
   createdAt: string
   commentsCount: number

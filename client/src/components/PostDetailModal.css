@@ -302,6 +302,417 @@
   margin: 0;
 }
 
+/* ── Status badge ── */
+.pdm-status-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.pdm-status-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.pdm-status-badge--active {
+  background: rgba(45, 122, 79, 0.12);
+  color: #2d7a4f;
+  border: 1px solid rgba(45, 122, 79, 0.25);
+}
+
+.pdm-status-badge--sold {
+  background: rgba(59, 35, 20, 0.10);
+  color: #5a3020;
+  border: 1px solid rgba(59, 35, 20, 0.20);
+}
+
+.pdm-status-badge--cancelled {
+  background: rgba(192, 57, 43, 0.10);
+  color: #c0392b;
+  border: 1px solid rgba(192, 57, 43, 0.22);
+}
+
+.pdm-status-badge--pending {
+  background: rgba(201, 150, 12, 0.12);
+  color: #a07808;
+  border: 1px solid rgba(201, 150, 12, 0.25);
+}
+
+/* ── Owner: status controls ── */
+.pdm-status-controls {
+  background: #fdf6ec;
+  border: 1px solid #e8ddd0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdm-status-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9c7a5a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.pdm-status-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pdm-status-btn {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.pdm-status-btn--active {
+  background: rgba(45, 122, 79, 0.10);
+  color: #2d7a4f;
+  border-color: rgba(45, 122, 79, 0.25);
+}
+
+.pdm-status-btn--sold {
+  background: rgba(59, 35, 20, 0.10);
+  color: #5a3020;
+  border-color: rgba(59, 35, 20, 0.20);
+}
+
+.pdm-status-btn--cancelled {
+  background: rgba(192, 57, 43, 0.10);
+  color: #c0392b;
+  border-color: rgba(192, 57, 43, 0.22);
+}
+
+.pdm-status-btn--current {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pdm-status-btn:not(.pdm-status-btn--current):hover {
+  opacity: 0.75;
+}
+
+.pdm-status-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Feedback messages ── */
+.pdm-feedback {
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 7px;
+}
+
+.pdm-feedback--ok {
+  background: rgba(45, 122, 79, 0.10);
+  color: #2d7a4f;
+}
+
+.pdm-feedback--err {
+  background: rgba(192, 57, 43, 0.10);
+  color: #c0392b;
+}
+
+/* ── Bids section ── */
+.pdm-bids-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdm-bids-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3b2314;
+  background: #f0e9df;
+  border: 1px solid #ddd4c8;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+  justify-content: center;
+}
+
+.pdm-bids-toggle svg {
+  width: 15px;
+  height: 15px;
+  color: #9c7a5a;
+}
+
+.pdm-bids-toggle:hover {
+  background: #e8ddd0;
+}
+
+.pdm-bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdm-bids-loading,
+.pdm-bids-empty {
+  font-size: 13px;
+  color: #9c7a5a;
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.pdm-bids-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9c7a5a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 4px 0 2px;
+}
+
+/* ── Bid row ── */
+.pdm-bid-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fdf6ec;
+  border: 1px solid #e8ddd0;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.pdm-bid-buyer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pdm-bid-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.pdm-bid-avatar-placeholder {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e8ddd0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b4513;
+  flex-shrink: 0;
+}
+
+.pdm-bid-buyer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pdm-bid-username {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3b2314;
+}
+
+.pdm-bid-message {
+  font-size: 12px;
+  color: #9c7a5a;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.pdm-bid-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.pdm-bid-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2d7a4f;
+}
+
+.pdm-bid-status {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.pdm-bid-accept-btn {
+  margin-top: 4px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #2d7a4f;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pdm-bid-accept-btn:hover:not(:disabled) {
+  background: #245f3d;
+}
+
+.pdm-bid-accept-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Buyer: offer section ── */
+.pdm-offer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdm-offer-open-btn {
+  width: 100%;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: #3b2314;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.2px;
+}
+
+.pdm-offer-open-btn:hover {
+  background: #5a3a20;
+}
+
+.pdm-offer-form {
+  background: #fdf6ec;
+  border: 1px solid #e8ddd0;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdm-offer-form-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3b2314;
+  margin: 0;
+}
+
+.pdm-offer-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9c7a5a;
+}
+
+.pdm-offer-input,
+.pdm-offer-textarea {
+  font-size: 14px;
+  color: #3b2314;
+  background: #fff;
+  border: 1px solid #ddd4c8;
+  border-radius: 8px;
+  padding: 8px 10px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdm-offer-input:focus,
+.pdm-offer-textarea:focus {
+  border-color: #9c7a5a;
+}
+
+.pdm-offer-textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.pdm-offer-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pdm-offer-cancel {
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9c7a5a;
+  background: #f0e9df;
+  border: 1px solid #ddd4c8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pdm-offer-cancel:hover {
+  background: #e8ddd0;
+}
+
+.pdm-offer-submit {
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #3b2314;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pdm-offer-submit:hover:not(:disabled) {
+  background: #5a3a20;
+}
+
+.pdm-offer-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Detail chips */
 .pdm-chips {
   display: grid;

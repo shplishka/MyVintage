@@ -103,6 +103,31 @@ export const updatePost = async (req: Request, res: Response): Promise<void> => 
     res.json(post);
 };
 
+export const updatePostStatus = async (req: Request, res: Response): Promise<void> => {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+        res.status(404).json({ message: 'Post not found' });
+        return;
+    }
+
+    if (post.seller.toString() !== req.jwtUser!.userId) {
+        res.status(403).json({ message: 'Forbidden: you are not the seller of this post' });
+        return;
+    }
+
+    const { status } = req.body;
+    const allowed = [PostStatus.Active, PostStatus.Sold, PostStatus.Cancelled];
+    if (!allowed.includes(status)) {
+        res.status(400).json({ message: `status must be one of: ${allowed.join(', ')}` });
+        return;
+    }
+
+    post.status = status;
+    await post.save();
+    res.json(post);
+};
+
 export const deletePost = async (req: Request, res: Response): Promise<void> => {
     const post = await Post.findById(req.params.id);
 

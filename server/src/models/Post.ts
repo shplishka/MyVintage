@@ -20,10 +20,11 @@ export enum Condition {
 }
 
 export enum PostStatus {
-    Active   = 'active',
-    Pending  = 'pending',   // an offer has been accepted; awaiting transaction completion
-    Sold     = 'sold',
-    Inactive = 'inactive',
+    Active    = 'active',
+    Pending   = 'pending',   // an offer has been accepted; awaiting transaction completion
+    Sold      = 'sold',
+    Inactive  = 'inactive',
+    Cancelled = 'cancelled', // seller manually cancelled the listing
 }
 
 export interface IPost extends Document {

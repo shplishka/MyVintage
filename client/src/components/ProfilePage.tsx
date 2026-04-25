@@ -77,6 +77,12 @@ function ProfilePostCard({ post, user, isOwner, initialSaved, onView, onEdit }: 
           <div className="post-card-img-placeholder" />
         )}
 
+        {post.status && post.status !== 'active' && (
+          <span className={`post-card-status-badge post-card-status-badge--${post.status}`}>
+            {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+          </span>
+        )}
+
         {isOwner && (
           <button
             className="post-card-edit"
@@ -335,29 +341,32 @@ export default function ProfilePage() {
       <section className="profile-posts-section">
 
         {/* Sells tab */}
-        {activeTab === 'sells' && (
-          <>
-            {loadingPosts ? (
-              <p className="profile-posts-loading">Loading posts…</p>
-            ) : posts.length === 0 ? (
-              <p className="profile-no-posts">no posts yet</p>
-            ) : (
-              <div className="profile-posts-grid">
-                {posts.map(post => (
-                  <ProfilePostCard
-                    key={post._id}
-                    post={post}
-                    user={user}
-                    isOwner={isOwner}
-                    initialSaved={post.saved ?? false}
-                    onView={setViewingPost}
-                    onEdit={setEditingPost}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        )}
+        {activeTab === 'sells' && (() => {
+          const activePosts = posts.filter(p => !['sold', 'cancelled'].includes(p.status ?? 'active'))
+          return (
+            <>
+              {loadingPosts ? (
+                <p className="profile-posts-loading">Loading posts…</p>
+              ) : activePosts.length === 0 ? (
+                <p className="profile-no-posts">no active sells yet</p>
+              ) : (
+                <div className="profile-posts-grid">
+                  {activePosts.map(post => (
+                    <ProfilePostCard
+                      key={post._id}
+                      post={post}
+                      user={user}
+                      isOwner={isOwner}
+                      initialSaved={post.saved ?? false}
+                      onView={setViewingPost}
+                      onEdit={setEditingPost}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )
+        })()}
 
         {/* Saved tab */}
         {activeTab === 'saved' && (
@@ -393,7 +402,33 @@ export default function ProfilePage() {
           </>
         )}
 
-        {activeTab === 'sold' && <p className="profile-no-posts">No archived items yet.</p>}
+        {/* Archive tab */}
+        {activeTab === 'sold' && (() => {
+          const archivedPosts = posts.filter(p => ['sold', 'cancelled'].includes(p.status ?? ''))
+          return (
+            <>
+              {loadingPosts ? (
+                <p className="profile-posts-loading">Loading posts…</p>
+              ) : archivedPosts.length === 0 ? (
+                <p className="profile-no-posts">No archived items yet.</p>
+              ) : (
+                <div className="profile-posts-grid">
+                  {archivedPosts.map(post => (
+                    <ProfilePostCard
+                      key={post._id}
+                      post={post}
+                      user={user}
+                      isOwner={isOwner}
+                      initialSaved={post.saved ?? false}
+                      onView={setViewingPost}
+                      onEdit={setEditingPost}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )
+        })()}
       </section>
 
       {/* ── Modals ── */}
@@ -403,8 +438,13 @@ export default function ProfilePage() {
           sellerRating={user.rating ?? 0}
           sellerLocation={user.location ?? null}
           isOwner={isOwner}
+          currentUserId={authUser?._id}
           onClose={() => setViewingPost(null)}
           onEdit={() => { setEditingPost(viewingPost); setViewingPost(null) }}
+          onPostUpdated={(updated) => {
+            setPosts(prev => prev.map(p => p._id === updated._id ? updated as Post : p))
+            setViewingPost(updated as Post)
+          }}
         />
       )}
 

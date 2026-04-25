@@ -24,6 +24,7 @@ interface FeedPost {
   brand: string
   style: string
   images: string[]
+  status?: string
   likesCount: number
   commentsCount: number
   seller: Seller
@@ -222,6 +223,11 @@ export default function FeedPage() {
                         </svg>
                       </div>
                     )}
+                    {post.status && post.status !== 'active' && (
+                      <span className={`feed-card-status-badge feed-card-status-badge--${post.status}`}>
+                        {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                      </span>
+                    )}
 
                     {/* Actions: bookmark + heart */}
                     <div className="feed-card-actions">
@@ -310,8 +316,13 @@ export default function FeedPage() {
           sellerRating={0}
           sellerLocation={null}
           isOwner={authUser?._id === viewingPost.seller._id}
+          currentUserId={authUser?._id}
           onClose={() => setViewingPost(null)}
           onEdit={() => { setEditingPost(viewingPost as unknown as PostData); setViewingPost(null) }}
+          onPostUpdated={(updated) => {
+            setPosts(prev => prev.map(p => p._id === updated._id ? { ...p, ...updated } : p))
+            setViewingPost(prev => prev && prev._id === updated._id ? { ...prev, ...updated } as FeedPost : prev)
+          }}
         />
       )}
 
