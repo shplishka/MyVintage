@@ -7,6 +7,20 @@ export const getAllUsers = async (_req: Request, res: Response): Promise<void> =
     res.json(users);
 };
 
+export const searchUsers = async (req: Request, res: Response): Promise<void> => {
+    const q = (req.query.q as string ?? '').trim();
+    if (!q) {
+        res.json([]);
+        return;
+    }
+    const users = await User.find({
+        username: { $regex: q, $options: 'i' },
+    })
+        .select('_id username profilePicture')
+        .limit(10);
+    res.json(users);
+};
+
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findById(req.params.id).select('-password');
 
