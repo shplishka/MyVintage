@@ -1,43 +1,211 @@
+/* ── Shell ── */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
   width: 100%;
   height: 56px;
-  background: #3b2314;
+  background: #fff;
+  border-bottom: 1px solid #e8ddd0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 24px;
+  gap: 0;
   box-sizing: border-box;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
+/* ── Logo ── */
 .navbar-logo {
   font-family: 'Georgia', 'Times New Roman', serif;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: #fdf6ec;
-  letter-spacing: -0.5px;
+  color: #c87941;
+  letter-spacing: -0.4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  margin-right: 32px;
 }
 
+.navbar-logo:hover {
+  opacity: 0.8;
+}
+
+/* ── Center nav ── */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.navbar-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7a6352;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.navbar-nav-link svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.navbar-nav-link:hover {
+  background: #f0e9df;
+  color: #3b2314;
+}
+
+.navbar-nav-link--active {
+  color: #3b2314;
+  font-weight: 700;
+}
+
+/* + Sell button */
+.navbar-sell-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #c87941;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+.navbar-sell-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.navbar-sell-btn:hover {
+  background: #a8622e;
+}
+
+/* ── Right side ── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* Icon buttons (Messages, Profile) */
+.navbar-icon-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #7a6352;
+  transition: background 0.15s, color 0.15s;
+}
+
+.navbar-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.navbar-icon-btn:hover {
+  background: #f0e9df;
+  color: #3b2314;
+}
+
+.navbar-icon-label {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Profile button */
+.navbar-profile-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #7a6352;
+  transition: background 0.15s, color 0.15s;
+}
+
+.navbar-profile-btn:hover {
+  background: #f0e9df;
+  color: #3b2314;
+}
+
+.navbar-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #e8ddd0;
+}
+
+.navbar-avatar-placeholder {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e8ddd0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #8b4513;
+}
+
+.navbar-profile-label {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Log out */
 .navbar-logout {
   background: transparent;
-  border: 1px solid rgba(253, 246, 236, 0.35);
-  border-radius: 4px;
-  color: #fdf6ec;
-  font-size: 13px;
+  border: 1px solid #e8ddd0;
+  border-radius: 6px;
+  color: #9c7a5a;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  padding: 6px 14px;
+  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  margin-left: 6px;
+  white-space: nowrap;
 }
 
 .navbar-logout:hover {
-  background: rgba(253, 246, 236, 0.12);
-  border-color: rgba(253, 246, 236, 0.6);
-}
-
-.navbar-logout:active {
-  opacity: 0.75;
+  background: #f0e9df;
+  border-color: #c8b8a8;
+  color: #3b2314;
 }
