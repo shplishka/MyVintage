@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../api/axiosInstance'
 import { useAuth } from '../context/AuthContext'
-import NewPostModal from './NewPostModal'
 import EditPostModal, { type PostData } from './EditPostModal'
 import PostDetailModal from './PostDetailModal'
 import './ProfilePage.css'
@@ -45,9 +44,8 @@ export default function ProfilePage() {
   const [loadingUser, setLoadingUser] = useState(true)
   const [loadingPosts, setLoadingPosts] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'listings' | 'saved' | 'sold'>('listings')
+  const [activeTab, setActiveTab] = useState<'sells' | 'saved' | 'sold'>('sells')
 
-  const [showNewPost, setShowNewPost] = useState(false)
   const [viewingPost, setViewingPost] = useState<Post | null>(null)
   const [editingPost, setEditingPost] = useState<Post | null>(null)
 
@@ -68,10 +66,6 @@ export default function ProfilePage() {
       .catch(() => setPosts([]))
       .finally(() => setLoadingPosts(false))
   }, [userId])
-
-  function handlePostCreated(post: PostData) {
-    setPosts(prev => [post as Post, ...prev])
-  }
 
   function handlePostUpdated(updated: PostData) {
     setPosts(prev => prev.map(p => p._id === updated._id ? updated as Post : p))
@@ -150,29 +144,21 @@ export default function ProfilePage() {
 
       {/* ── Tab bar ── */}
       <div className="profile-tabs">
-        {(['listings', 'saved', 'sold'] as const).map((tab) => (
+        {(['sells', 'saved', 'sold'] as const).map((tab) => (
           <button
             key={tab}
             className={`profile-tab${activeTab === tab ? ' profile-tab--active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'listings' ? 'My Listings' : tab === 'saved' ? 'Saved' : 'Archive'}
+            {tab === 'sells' ? 'My Sells' : tab === 'saved' ? 'Saved' : 'Archive'}
           </button>
         ))}
       </div>
 
       {/* ── Tab content ── */}
       <section className="profile-posts-section">
-        {activeTab === 'listings' && (
+        {activeTab === 'sells' && (
           <>
-            {isOwner && (
-              <button className="profile-new-post-btn" onClick={() => setShowNewPost(true)}>
-                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                New Listing
-              </button>
-            )}
 
             {loadingPosts ? (
               <p className="profile-posts-loading">Loading posts…</p>
@@ -294,13 +280,6 @@ export default function ProfilePage() {
       </section>
 
       {/* ── Modals ── */}
-      {showNewPost && (
-        <NewPostModal
-          onClose={() => setShowNewPost(false)}
-          onCreated={handlePostCreated}
-        />
-      )}
-
       {viewingPost && !editingPost && (
         <PostDetailModal
           post={viewingPost}

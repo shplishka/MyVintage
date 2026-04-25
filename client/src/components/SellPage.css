@@ -1,0 +1,240 @@
+/* ── Page ── */
+.sell-page {
+  min-height: calc(100svh - 56px);
+  background: #f0e9df;
+  padding: 40px 16px 80px;
+}
+
+.sell-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.sell-header {
+  margin-bottom: 28px;
+}
+
+.sell-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3b2314;
+  margin: 0 0 6px;
+  letter-spacing: -0.4px;
+}
+
+.sell-sub {
+  font-size: 14px;
+  color: #9c7a5a;
+  margin: 0;
+}
+
+/* ── Form ── */
+.sell-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Image zone ── */
+.sell-image-zone {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  border: 2px dashed #c8b8a8;
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  position: relative;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.sell-image-zone:hover,
+.sell-image-zone:focus {
+  border-color: #8b4513;
+}
+
+.sell-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sell-image-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+
+.sell-image-overlay svg {
+  width: 28px;
+  height: 28px;
+}
+
+.sell-image-zone:hover .sell-image-overlay {
+  opacity: 1;
+}
+
+.sell-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #9c7a5a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sell-image-placeholder svg {
+  width: 44px;
+  height: 44px;
+  color: #c8b8a8;
+}
+
+.sell-image-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #b0a090;
+}
+
+.sell-file-input {
+  display: none;
+}
+
+/* ── Fields ── */
+.sell-fields {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e8ddd0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sell-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7a6352;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+
+.sell-input,
+.sell-textarea,
+.sell-select {
+  font-size: 14px;
+  color: #3b2314;
+  background: #fdf6ec;
+  border: 1px solid #ddd4c8;
+  border-radius: 8px;
+  padding: 10px 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sell-input:focus,
+.sell-textarea:focus,
+.sell-select:focus {
+  border-color: #8b4513;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.08);
+}
+
+.sell-textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.55;
+}
+
+.sell-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239c7a5a'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.sell-row {
+  display: flex;
+  gap: 14px;
+}
+
+/* ── Error ── */
+.sell-error {
+  font-size: 13px;
+  color: #b94a48;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Actions ── */
+.sell-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.sell-cancel {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #7a6352;
+  background: #fff;
+  border: 1px solid #ddd4c8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.sell-cancel:hover {
+  background: #f0e9df;
+  border-color: #c8b8a8;
+}
+
+.sell-submit {
+  flex: 2;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: #8b4513;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.2px;
+}
+
+.sell-submit:hover:not(:disabled) {
+  background: #6d3410;
+}
+
+.sell-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
