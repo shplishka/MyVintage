@@ -3,6 +3,7 @@ import { authenticate } from '../middleware/auth.middleware';
 import { requireActiveListing } from '../middleware/activeListing.middleware';
 import {
     createOffer,
+    getOffersForPost,
     getReceivedOffers,
     getSentOffers,
     acceptOffer,
@@ -174,6 +175,8 @@ router.use(authenticate);
  *             example: { message: "This item has already been sold." }
  */
 router.post('/:postId/offers', requireActiveListing, createOffer);
+
+router.get('/:postId/offers', getOffersForPost);
 
 /* ─────────────────────────────────────────────────────────────
    GET /api/offers/received

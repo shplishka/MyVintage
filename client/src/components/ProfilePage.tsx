@@ -77,6 +77,12 @@ function ProfilePostCard({ post, user, isOwner, initialSaved, onView, onEdit }: 
           <div className="post-card-img-placeholder" />
         )}
 
+        {post.status && post.status !== 'active' && (
+          <span className={`post-card-status-badge post-card-status-badge--${post.status}`}>
+            {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+          </span>
+        )}
+
         {isOwner && (
           <button
             className="post-card-edit"
@@ -403,8 +409,13 @@ export default function ProfilePage() {
           sellerRating={user.rating ?? 0}
           sellerLocation={user.location ?? null}
           isOwner={isOwner}
+          currentUserId={authUser?._id}
           onClose={() => setViewingPost(null)}
           onEdit={() => { setEditingPost(viewingPost); setViewingPost(null) }}
+          onPostUpdated={(updated) => {
+            setPosts(prev => prev.map(p => p._id === updated._id ? updated as Post : p))
+            setViewingPost(updated as Post)
+          }}
         />
       )}
 

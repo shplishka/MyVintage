@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, getAllPosts, getPostsByUser, getPostById, updatePost, deletePost, toggleLike, uploadPostImages, toggleSave, getSavedPosts } from '../controllers/post.controller';
+import { createPost, getAllPosts, getPostsByUser, getPostById, updatePost, updatePostStatus, deletePost, toggleLike, uploadPostImages, toggleSave, getSavedPosts } from '../controllers/post.controller';
 import { uploadPostImages as postImagesUpload } from '../middleware/upload.middleware';
 import { authenticate, optionalAuthenticate } from '../middleware/auth.middleware';
 
@@ -296,6 +296,8 @@ router.get('/:id', getPostById);
  *         description: Post not found
  */
 router.put('/:id', authenticate, updatePost);
+
+router.patch('/:id/status', authenticate, updatePostStatus);
 
 /**
  * @swagger

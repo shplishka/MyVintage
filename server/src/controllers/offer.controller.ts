@@ -117,14 +117,17 @@ export const acceptOffer = async (req: Request, res: Response): Promise<void> =>
         return;
     }
 
-    // Accept this offer and lock the listing in one atomic-ish pass.
+    // Accept this offer, mark the listing as Sold, and decline all other offers.
     // Run the three writes in parallel — none depends on the others' result.
     await Promise.all([
         // 1. Mark the accepted offer.
         offer.updateOne({ status: OfferStatus.Accepted }),
 
-        // 2. Lock the listing so requireActiveListing blocks any new offers.
-        Post.updateOne({ _id: offer.sale }, { status: PostStatus.Pending }),
+        // 2. Mark the listing as Sold and record the buyer.
+        Post.updateOne(
+            { _id: offer.sale },
+            { status: PostStatus.Sold, buyer: offer.buyer, soldAt: new Date() }
+        ),
 
         // 3. Decline every other pending offer on the same listing.
         Offer.updateMany(
@@ -238,4 +241,30 @@ export const cancelOffer = async (req: Request, res: Response): Promise<void> =>
         .populate('sale',  'title images price status');
 
     res.json(updated);
+};
+
+/* ─────────────────────────────────────────────────────────────
+   GET /api/posts/:postId/offers
+   All offers on a specific listing. Only the seller may call this.
+───────────────────────────────────────────────────────────── */
+export const getOffersForPost = async (req: Request, res: Response): Promise<void> => {
+    const postId = req.params.postId;
+    const userId = req.jwtUser!.userId;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+        res.status(404).json({ message: 'Post not found.' });
+        return;
+    }
+
+    if (post.seller.toString() !== userId) {
+        res.status(403).json({ message: 'Only the post owner can view offers.' });
+        return;
+    }
+
+    const offers = await Offer.find({ sale: postId })
+        .populate('buyer', 'username profilePicture')
+        .sort({ createdAt: -1 });
+
+    res.json(offers);
 };
