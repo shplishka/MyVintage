@@ -18,7 +18,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
-app.use('/media', express.static(path.join(__dirname, '../public')));
+// process.cwd() is the server/ directory when PM2/node starts the app from there.
+// __dirname would resolve to dist/src after compilation and point at the wrong folder.
+app.use('/media', express.static(path.join(process.cwd(), 'public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/posts',  postRoutes);
 app.use('/api/posts',  offerRoutes);   // POST /api/posts/:postId/offers
