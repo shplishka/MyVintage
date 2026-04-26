@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Login'
 import Register from './components/Register'
+import OAuthCallback from './components/OAuthCallback'
 import FeedPage from './components/FeedPage'
 import SellPage from './components/SellPage'
 import ProfilePage from './components/ProfilePage'
@@ -15,6 +16,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>

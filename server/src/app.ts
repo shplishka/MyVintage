@@ -1,9 +1,11 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+import passport from 'passport';
 import dotenv from "dotenv";
 import path from "path";
 import swaggerUi from 'swagger-ui-express';
 import connectDB from './services/db';
+import { configurePassport } from './config/passport';
 import authRoutes from './routes/auth.routes';
 import postRoutes from './routes/post.routes';
 import userRoutes from './routes/user.routes';
@@ -13,10 +15,17 @@ import transactionRoutes from './routes/transaction.routes';
 import swaggerSpec from './config/swagger';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+configurePassport();
+
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+const allowedOrigins = [
+    process.env.CLIENT_URL || 'http://localhost:5173',
+    'http://localhost:5173',
+];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(passport.initialize());
 app.use(express.json());
 // process.cwd() is the server/ directory when PM2/node starts the app from there.
 // __dirname would resolve to dist/src after compilation and point at the wrong folder.
