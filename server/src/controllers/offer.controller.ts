@@ -123,10 +123,10 @@ export const acceptOffer = async (req: Request, res: Response): Promise<void> =>
         // 1. Mark the accepted offer.
         offer.updateOne({ status: OfferStatus.Accepted }),
 
-        // 2. Mark the listing as Sold and record the buyer.
+        // 2. Lock the listing so no new offers can be submitted while a transaction is in progress.
         Post.updateOne(
             { _id: offer.sale },
-            { status: PostStatus.Sold, buyer: offer.buyer, soldAt: new Date() }
+            { status: PostStatus.Pending }
         ),
 
         // 3. Decline every other pending offer on the same listing.

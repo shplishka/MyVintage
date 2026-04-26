@@ -1,7 +1,7 @@
 import request from 'supertest';
 import express, { Application } from 'express';
 
-//  Mocks (must be before imports) 
+//  Mocks (must be before imports)
 
 jest.mock('../src/models/Comment');
 jest.mock('../src/models/Post');
@@ -19,20 +19,23 @@ import Comment      from '../src/models/Comment';
 import Post         from '../src/models/Post';
 import commentRoutes from '../src/routes/comment.routes';
 
-//  Test app (no DB, no listen) 
+//  Test app (no DB, no listen)
 
 const app: Application = express();
 app.use(express.json());
 app.use('/api/posts/:postId/comments', commentRoutes);
 app.use('/api/comments', commentRoutes);
 
-//  Shared fixtures 
+//  Shared fixtures
+// POST_ID and COMMENT_ID must be valid 24-hex MongoDB ObjectIds because
+// addComment now validates postId with Types.ObjectId.isValid().
+// AUTHOR_ID stays as a plain string since it comes from req.jwtUser (not params).
 
-const AUTHOR_ID  = 'author123'; // matches jwtUser.userId injected by mock
+const AUTHOR_ID  = 'author123';
 const OTHER_ID   = 'other456';
 const SELLER_ID  = 'seller789';
-const POST_ID    = 'post111';
-const COMMENT_ID = 'comment222';
+const POST_ID    = '000000000000000000000001';
+const COMMENT_ID = '000000000000000000000002';
 
 const makeComment = (overrides: Record<string, unknown> = {}) => ({
     _id:       COMMENT_ID,
@@ -51,7 +54,6 @@ const makePost = (overrides: Record<string, unknown> = {}) => ({
     ...overrides,
 });
 
-// helper: mock Comment.find chain — .populate().sort()
 const mockCommentFind = (result: unknown[]) => {
     const chain = {
         populate: jest.fn().mockReturnThis(),
@@ -61,7 +63,11 @@ const mockCommentFind = (result: unknown[]) => {
     return chain;
 };
 
-//  POST /api/posts/:postId/comments 
+beforeEach(() => {
+    jest.clearAllMocks();
+});
+
+//  POST /api/posts/:postId/comments
 
 describe('POST /api/posts/:postId/comments', () => {
     it('creates a comment and returns 201', async () => {
@@ -75,9 +81,13 @@ describe('POST /api/posts/:postId/comments', () => {
             .send({ content: 'Love this jacket!' });
 
         expect(res.status).toBe(201);
-        expect(Comment.create).toHaveBeenCalledWith(
-            expect.objectContaining({ post: POST_ID, author: AUTHOR_ID, content: 'Love this jacket!' })
-        );
+
+        // post is a Types.ObjectId instance; author is a plain string
+        const [arg] = (Comment.create as jest.Mock).mock.calls[0];
+        expect(arg.post.toString()).toBe(POST_ID);
+        expect(arg.author).toBe(AUTHOR_ID);
+        expect(arg.content).toBe('Love this jacket!');
+
         expect(Post.findByIdAndUpdate).toHaveBeenCalledWith(
             POST_ID, { $inc: { commentsCount: 1 } }
         );
@@ -92,6 +102,15 @@ describe('POST /api/posts/:postId/comments', () => {
         expect(res.body.message).toMatch(/content is required/i);
     });
 
+    it('returns 400 when postId is not a valid ObjectId', async () => {
+        const res = await request(app)
+            .post('/api/posts/not-an-objectid/comments')
+            .send({ content: 'test' });
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe('Invalid post id');
+    });
+
     it('returns 404 when post does not exist', async () => {
         (Post.findById as jest.Mock).mockResolvedValue(null);
 
@@ -104,7 +123,7 @@ describe('POST /api/posts/:postId/comments', () => {
     });
 });
 
-//  GET /api/posts/:postId/comments 
+//  GET /api/posts/:postId/comments
 
 describe('GET /api/posts/:postId/comments', () => {
     it('returns a list of comments for a post', async () => {
@@ -138,7 +157,7 @@ describe('GET /api/posts/:postId/comments', () => {
     });
 });
 
-//  PUT /api/comments/:id 
+//  PUT /api/comments/:id
 
 describe('PUT /api/comments/:id', () => {
     it('updates a comment and returns 200', async () => {
@@ -186,11 +205,11 @@ describe('PUT /api/comments/:id', () => {
     });
 });
 
-//  DELETE /api/comments/:id 
+//  DELETE /api/comments/:id
 
 describe('DELETE /api/comments/:id', () => {
     it('allows the comment author to delete', async () => {
-        const comment = makeComment(); // author === AUTHOR_ID === jwtUser.userId
+        const comment = makeComment();
         (Comment.findById as jest.Mock).mockResolvedValue(comment);
         (Post.findById as jest.Mock).mockResolvedValue(makePost());
         (Post.findByIdAndUpdate as jest.Mock).mockResolvedValue(undefined);
@@ -206,7 +225,6 @@ describe('DELETE /api/comments/:id', () => {
     });
 
     it('allows the post seller to delete a comment by another user', async () => {
-        // comment author is OTHER_ID, but post seller === AUTHOR_ID (jwtUser.userId)
         const comment = makeComment({ author: { toString: () => OTHER_ID } });
         const post    = makePost({ seller: { toString: () => AUTHOR_ID } });
 

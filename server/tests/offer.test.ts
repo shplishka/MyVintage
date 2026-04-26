@@ -65,6 +65,19 @@ const makePopulated = (overrides: Record<string, unknown> = {}) => ({
     ...overrides,
 });
 
+/**
+ * Make a chainable populate mock that can be awaited.
+ * Handles controllers that chain .populate().populate() before await.
+ */
+function makePopulateChain(result: unknown) {
+    const chain: any = {};
+    chain.populate = jest.fn().mockReturnValue(chain);
+    // Make thenable so `await chain` resolves to result
+    chain.then = (onFulfilled: any, onRejected: any) =>
+        Promise.resolve(result).then(onFulfilled, onRejected);
+    return chain;
+}
+
 /** Make Offer.find() return a chainable mock ending in a resolved array. */
 const mockOfferFind = (result: unknown[]) => {
     const chain = {
@@ -284,7 +297,7 @@ describe('PATCH /api/offers/:offerId/accept', () => {
 
         (Offer.findById as jest.Mock)
             .mockResolvedValueOnce(raw)
-            .mockReturnValueOnce({ populate: jest.fn().mockResolvedValue(populated) });
+            .mockReturnValueOnce(makePopulateChain(populated));
 
         (Post.updateOne    as jest.Mock).mockResolvedValue({});
         (Offer.updateMany  as jest.Mock).mockResolvedValue({});
@@ -293,9 +306,9 @@ describe('PATCH /api/offers/:offerId/accept', () => {
 
         expect(res.status).toBe(200);
 
-        // Listing should be set to pending (locked for new offers)
+        // Listing should be locked as pending (not yet sold — that happens at transaction completion)
         expect(Post.updateOne).toHaveBeenCalledWith(
-            { _id: raw._id },
+            { _id: raw.sale },
             { status: 'pending' }
         );
 
@@ -359,7 +372,7 @@ describe('PATCH /api/offers/:offerId/decline', () => {
 
         (Offer.findById as jest.Mock)
             .mockResolvedValueOnce(raw)
-            .mockReturnValueOnce({ populate: jest.fn().mockResolvedValue(populated) });
+            .mockReturnValueOnce(makePopulateChain(populated));
 
         (Offer.exists   as jest.Mock).mockResolvedValue(null);   // no other pending offers
         (Post.updateOne as jest.Mock).mockResolvedValue({});
@@ -379,7 +392,7 @@ describe('PATCH /api/offers/:offerId/decline', () => {
 
         (Offer.findById as jest.Mock)
             .mockResolvedValueOnce(raw)
-            .mockReturnValueOnce({ populate: jest.fn().mockResolvedValue(populated) });
+            .mockReturnValueOnce(makePopulateChain(populated));
 
         (Offer.exists as jest.Mock).mockResolvedValue({ _id: 'anotherOffer' });
 
@@ -426,7 +439,7 @@ describe('PATCH /api/offers/:offerId/cancel', () => {
 
         (Offer.findById as jest.Mock)
             .mockResolvedValueOnce(raw)
-            .mockReturnValueOnce({ populate: jest.fn().mockResolvedValue(populated) });
+            .mockReturnValueOnce(makePopulateChain(populated));
 
         (Offer.exists   as jest.Mock).mockResolvedValue(null);
         (Post.updateOne as jest.Mock).mockResolvedValue({});

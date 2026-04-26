@@ -26,7 +26,7 @@ export const addComment = async (req: Request, res: Response): Promise<void> => 
 
     const comment: IComment = await Comment.create({
         post:    new Types.ObjectId(postId),
-        author:  new Types.ObjectId(req.jwtUser!.userId),
+        author:  req.jwtUser!.userId,
         content,
     });
 

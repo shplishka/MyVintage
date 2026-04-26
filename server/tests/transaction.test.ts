@@ -114,13 +114,18 @@ describe('POST /api/transactions', () => {
             .send(validBody);
 
         expect(res.status).toBe(201);
+        // buyer/seller come directly from offer.buyer/offer.seller (ObjectId-like mock objects)
+        // so we only assert on fields that are plain values
         expect(Transaction.create).toHaveBeenCalledWith(
             expect.objectContaining({
-                buyer:         BUYER_ID,
-                seller:        SELLER_ID,
-                paymentMethod: PaymentMethod.Cash,
+                paymentMethod:  PaymentMethod.Cash,
+                meetupLocation: 'Central Park',
             })
         );
+        // Verify the create received the mock offer's buyer/seller references
+        const [txnArg] = (Transaction.create as jest.Mock).mock.calls[0];
+        expect(txnArg.buyer.toString()).toBe(BUYER_ID);
+        expect(txnArg.seller.toString()).toBe(SELLER_ID);
         expect(created.populate).toHaveBeenCalled();
     });
 

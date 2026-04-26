@@ -216,7 +216,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         );
         res.json({ liked: false, likesCount: updated!.likesCount });
     } else {
-        await Like.create({ post: new Types.ObjectId(postId), user: new Types.ObjectId(userId) });
+        await Like.create({ post: new Types.ObjectId(postId), user: userId });
         const updated = await Post.findByIdAndUpdate(
             postId,
             { $inc: { likesCount: 1 } },

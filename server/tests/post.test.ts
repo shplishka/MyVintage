@@ -4,12 +4,20 @@ import express, { Application } from 'express';
 // Mocks
 
 jest.mock('../src/models/Post');
+jest.mock('../src/models/Offer');
+jest.mock('../src/models/Like');
+jest.mock('../src/models/User');
+jest.mock('../src/services/ai', () => ({
+    buildSearchPlan: jest.fn(),
+}));
 
 jest.mock('../src/middleware/auth.middleware', () => ({
     authenticate: jest.fn((req: any, _res: any, next: any) => {
         req.jwtUser = { userId: 'seller123', email: 'seller@example.com' };
         next();
     }),
+    // optionalAuthenticate does not set jwtUser — simulates unauthenticated GET /
+    optionalAuthenticate: jest.fn((_req: any, _res: any, next: any) => next()),
 }));
 
 jest.mock('../src/middleware/upload.middleware', () => ({
@@ -32,22 +40,27 @@ jest.mock('../src/middleware/upload.middleware', () => ({
 
 // Imports
 
-import Post from '../src/models/Post';
+import Post  from '../src/models/Post';
+import Offer from '../src/models/Offer';
+import Like  from '../src/models/Like';
+import User  from '../src/models/User';
+import { buildSearchPlan } from '../src/services/ai';
 import postRoutes from '../src/routes/post.routes';
 
-//Test app (no DB connection, no listen)
+// Test app (no DB connection, no listen)
 
 const app: Application = express();
 app.use(express.json());
 app.use('/api/posts', postRoutes);
 
-//Shared fixtures
+// Shared fixtures
 
 const SELLER_ID = 'seller123';
 const OTHER_ID  = 'other456';
-const POST_ID   = 'post789';
+// POST_ID must be a valid 24-hex ObjectId because toggleLike validates it
+const POST_ID   = '000000000000000000000001';
 
-const makePost = (overrides: Record<string, unknown> = {}) => ({
+const makePostData = (overrides: Record<string, unknown> = {}) => ({
     _id:         POST_ID,
     seller:      { toString: () => SELLER_ID },
     title:       'Vintage Jacket',
@@ -58,12 +71,23 @@ const makePost = (overrides: Record<string, unknown> = {}) => ({
     year:        1990,
     brand:       "Levi's",
     style:       'Casual',
-    images:      [],
+    images:      [] as string[],
     status:      'active',
-    save:        jest.fn().mockResolvedValue(undefined),
-    deleteOne:   jest.fn().mockResolvedValue(undefined),
+    likesCount:  0,
+    savesCount:  0,
     ...overrides,
 });
+
+// makePost adds jest-mock lifecycle methods and toObject (called by getAllPosts)
+const makePost = (overrides: Record<string, unknown> = {}) => {
+    const data = makePostData(overrides);
+    return {
+        ...data,
+        toObject:  jest.fn().mockReturnValue(data),
+        save:      jest.fn().mockResolvedValue(undefined),
+        deleteOne: jest.fn().mockResolvedValue(undefined),
+    };
+};
 
 const validBody = {
     title:       'Vintage Jacket',
@@ -76,7 +100,6 @@ const validBody = {
     style:       'Casual',
 };
 
-// helper: make Post.find() return a chainable mock
 const mockFind = (result: unknown[]) => {
     const chain = {
         populate: jest.fn().mockReturnThis(),
@@ -86,14 +109,19 @@ const mockFind = (result: unknown[]) => {
     return chain;
 };
 
-// helper: make Post.findById() return a chainable mock
 const mockFindById = (result: unknown) => {
     const chain = { populate: jest.fn().mockResolvedValue(result) };
     (Post.findById as jest.Mock).mockReturnValue(chain);
     return chain;
 };
 
-//POST /api/posts
+beforeEach(() => {
+    jest.clearAllMocks();
+    // Default: no blocking offers (used by deletePost)
+    (Offer.exists as jest.Mock).mockResolvedValue(null);
+});
+
+// POST /api/posts
 
 describe('POST /api/posts', () => {
     it('creates a post and returns 201', async () => {
@@ -122,7 +150,7 @@ describe('POST /api/posts', () => {
     });
 });
 
-//GET /api/posts
+// GET /api/posts
 
 describe('GET /api/posts', () => {
     it('returns all posts', async () => {
@@ -167,7 +195,7 @@ describe('GET /api/posts', () => {
     });
 });
 
-// GET /api/posts/user/:userId 
+// GET /api/posts/user/:userId
 
 describe('GET /api/posts/user/:userId', () => {
     it('returns all posts for a given user', async () => {
@@ -190,7 +218,7 @@ describe('GET /api/posts/user/:userId', () => {
     });
 });
 
-// GET /api/posts/:id 
+// GET /api/posts/:id
 
 describe('GET /api/posts/:id', () => {
     it('returns a post by ID', async () => {
@@ -212,7 +240,7 @@ describe('GET /api/posts/:id', () => {
     });
 });
 
-// PUT /api/posts/:id 
+// PUT /api/posts/:id
 
 describe('PUT /api/posts/:id', () => {
     it('updates a post and returns it', async () => {
@@ -251,7 +279,7 @@ describe('PUT /api/posts/:id', () => {
     });
 });
 
-// DELETE /api/posts/:id 
+// DELETE /api/posts/:id
 
 describe('DELETE /api/posts/:id', () => {
     it('deletes a post and returns a success message', async () => {
@@ -263,6 +291,18 @@ describe('DELETE /api/posts/:id', () => {
         expect(res.status).toBe(200);
         expect(res.body.message).toBe('Post deleted successfully');
         expect(post.deleteOne).toHaveBeenCalled();
+    });
+
+    it('returns 409 when the post has active/accepted offers', async () => {
+        const post = makePost();
+        (Post.findById as jest.Mock).mockResolvedValue(post);
+        (Offer.exists as jest.Mock).mockResolvedValue({ _id: 'blocked' });
+
+        const res = await request(app).delete(`/api/posts/${POST_ID}`);
+
+        expect(res.status).toBe(409);
+        expect(res.body.message).toMatch(/pending and accepted offers/i);
+        expect(post.deleteOne).not.toHaveBeenCalled();
     });
 
     it('returns 404 when post does not exist', async () => {
@@ -303,7 +343,7 @@ describe('POST /api/posts/:id/images', () => {
     });
 
     it('appends to existing images', async () => {
-        const post = makePost({ images: ['/media/posts/post789/existing.jpg'] });
+        const post = makePost({ images: [`/media/posts/${POST_ID}/existing.jpg`] });
         (Post.findById as jest.Mock).mockResolvedValue(post);
 
         const res = await request(app)
@@ -326,7 +366,7 @@ describe('POST /api/posts/:id/images', () => {
     });
 
     it('returns 400 when upload would exceed the 10-image limit', async () => {
-        const post = makePost({ images: new Array(9).fill('/media/posts/post789/x.jpg') });
+        const post = makePost({ images: new Array(9).fill(`/media/posts/${POST_ID}/x.jpg`) });
         (Post.findById as jest.Mock).mockResolvedValue(post);
 
         const res = await request(app)
@@ -358,5 +398,161 @@ describe('POST /api/posts/:id/images', () => {
 
         expect(res.status).toBe(404);
         expect(res.body.message).toBe('Post not found');
+    });
+});
+
+// POST /api/posts/:id/like — toggleLike
+
+describe('POST /api/posts/:id/like', () => {
+    it('likes a post (first like) and returns liked=true with updated count', async () => {
+        (Post.exists as jest.Mock).mockResolvedValue({ _id: POST_ID });
+        (Like.findOne as jest.Mock).mockResolvedValue(null);
+        (Like.create as jest.Mock).mockResolvedValue({});
+        (Post.findByIdAndUpdate as jest.Mock).mockResolvedValue(makePost({ likesCount: 1 }));
+
+        const res = await request(app).post(`/api/posts/${POST_ID}/like`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.liked).toBe(true);
+        expect(res.body.likesCount).toBe(1);
+        expect(Like.create).toHaveBeenCalled();
+    });
+
+    it('unlikes a post (second toggle) and returns liked=false', async () => {
+        const existingLike = { deleteOne: jest.fn().mockResolvedValue({}) };
+        (Post.exists as jest.Mock).mockResolvedValue({ _id: POST_ID });
+        (Like.findOne as jest.Mock).mockResolvedValue(existingLike);
+        (Post.findByIdAndUpdate as jest.Mock).mockResolvedValue(makePost({ likesCount: 0 }));
+
+        const res = await request(app).post(`/api/posts/${POST_ID}/like`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.liked).toBe(false);
+        expect(res.body.likesCount).toBe(0);
+        expect(existingLike.deleteOne).toHaveBeenCalled();
+    });
+
+    it('returns 404 when post does not exist', async () => {
+        (Post.exists as jest.Mock).mockResolvedValue(null);
+
+        const res = await request(app).post(`/api/posts/${POST_ID}/like`);
+
+        expect(res.status).toBe(404);
+        expect(res.body.message).toBe('Post not found');
+    });
+
+    it('returns 400 when postId is not a valid ObjectId', async () => {
+        const res = await request(app).post('/api/posts/not-valid/like');
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe('Invalid post id');
+    });
+});
+
+// POST /api/posts/:id/save — toggleSave
+
+describe('POST /api/posts/:id/save', () => {
+    it('saves a post that was not yet saved', async () => {
+        const user = {
+            savedPosts: [],
+            some: (fn: any) => false,
+        };
+        (Post.exists as jest.Mock).mockResolvedValue({ _id: POST_ID });
+        (User.findById as jest.Mock).mockResolvedValue(user);
+        (User.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
+        (Post.findByIdAndUpdate as jest.Mock).mockResolvedValue(makePost({ savesCount: 1 }));
+
+        const res = await request(app).post(`/api/posts/${POST_ID}/save`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.saved).toBe(true);
+        expect(res.body.savesCount).toBe(1);
+    });
+
+    it('unsaves a previously saved post', async () => {
+        const user = {
+            savedPosts: [{ toString: () => POST_ID }],
+            some: (fn: any) => fn({ toString: () => POST_ID }),
+        };
+        (Post.exists as jest.Mock).mockResolvedValue({ _id: POST_ID });
+        (User.findById as jest.Mock).mockResolvedValue(user);
+        (User.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
+        (Post.findByIdAndUpdate as jest.Mock).mockResolvedValue(makePost({ savesCount: 0 }));
+
+        const res = await request(app).post(`/api/posts/${POST_ID}/save`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.saved).toBe(false);
+        expect(res.body.savesCount).toBe(0);
+    });
+
+    it('returns 404 when post does not exist', async () => {
+        (Post.exists as jest.Mock).mockResolvedValue(null);
+
+        const res = await request(app).post(`/api/posts/${POST_ID}/save`);
+
+        expect(res.status).toBe(404);
+    });
+});
+
+// POST /api/posts/smart-search
+
+describe('POST /api/posts/smart-search', () => {
+    const mockFindChain = (result: unknown[]) => {
+        const chain = {
+            populate: jest.fn().mockReturnThis(),
+            sort:     jest.fn().mockReturnThis(),
+            limit:    jest.fn().mockResolvedValue(result),
+        };
+        (Post.find as jest.Mock).mockReturnValue(chain);
+        return chain;
+    };
+
+    it('returns posts for a valid prompt using AI plan', async () => {
+        (buildSearchPlan as jest.Mock).mockResolvedValue({
+            filters:     { category: 'clothing' },
+            explanation: 'Looking for clothing items',
+        });
+        mockFindChain([makePost()]);
+
+        const res = await request(app)
+            .post('/api/posts/smart-search')
+            .send({ prompt: 'show me vintage jackets' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.posts).toHaveLength(1);
+        expect(res.body.explanation).toBe('Looking for clothing items');
+        expect(res.body.fallback).toBe(false);
+    });
+
+    it('falls back to keyword search when AI fails', async () => {
+        (buildSearchPlan as jest.Mock).mockRejectedValue(new Error('Gemini error'));
+        mockFindChain([]);
+
+        const res = await request(app)
+            .post('/api/posts/smart-search')
+            .send({ prompt: 'blue denim jacket' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.fallback).toBe(true);
+        expect(res.body.explanation).toContain('blue denim jacket');
+    });
+
+    it('returns 400 when prompt is missing', async () => {
+        const res = await request(app)
+            .post('/api/posts/smart-search')
+            .send({});
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/prompt is required/i);
+    });
+
+    it('returns 400 when prompt exceeds 500 characters', async () => {
+        const res = await request(app)
+            .post('/api/posts/smart-search')
+            .send({ prompt: 'x'.repeat(501) });
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/500/);
     });
 });
