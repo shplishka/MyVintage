@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createPost, getAllPosts, getPostsByUser, getPostById, updatePost, updatePostStatus, deletePost, toggleLike, uploadPostImages, toggleSave, getSavedPosts } from '../controllers/post.controller';
+import { smartSearch } from '../controllers/search.controller';
 import { uploadPostImages as postImagesUpload } from '../middleware/upload.middleware';
 import { authenticate, optionalAuthenticate } from '../middleware/auth.middleware';
 
@@ -238,6 +239,8 @@ router.get('/user/:userId', getPostsByUser);
  *                 message: { type: string, example: "User not found" }
  */
 router.get('/saved', authenticate, getSavedPosts);
+
+router.post('/smart-search', smartSearch);
 
 /**
  * @swagger

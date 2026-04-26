@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axiosInstance'
 import { useAuth } from '../context/AuthContext'
@@ -58,6 +58,14 @@ export default function FeedPage() {
   const [viewingPost, setViewingPost] = useState<FeedPost | null>(null)
   const [editingPost, setEditingPost] = useState<PostData | null>(null)
 
+  const [smartQuery, setSmartQuery] = useState('')
+  const [smartResults, setSmartResults] = useState<FeedPost[] | null>(null)
+  const [smartExplanation, setSmartExplanation] = useState<string | null>(null)
+  const [smartLoading, setSmartLoading] = useState(false)
+  const [smartError, setSmartError] = useState<string | null>(null)
+  const smartDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const smartReqIdRef = useRef(0)
+
   useEffect(() => {
     setLoading(true)
     const params = activeCategory ? `?category=${activeCategory}` : ''
@@ -106,6 +114,76 @@ export default function FeedPage() {
     }
   }
 
+  // Debounce: fire smart search 600 ms after the user stops typing (min 3 chars)
+  useEffect(() => {
+    if (smartDebounceRef.current) clearTimeout(smartDebounceRef.current)
+    const q = smartQuery.trim()
+    if (q.length === 0) {
+      setSmartResults(null)
+      setSmartExplanation(null)
+      setSmartError(null)
+      setSmartLoading(false)
+      return
+    }
+    if (q.length < 3) {
+      setSmartLoading(false)
+      return
+    }
+    smartDebounceRef.current = setTimeout(() => runSmartSearch(q), 600)
+    return () => { if (smartDebounceRef.current) clearTimeout(smartDebounceRef.current) }
+  }, [smartQuery]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function runSmartSearch(q: string) {
+    const id = ++smartReqIdRef.current
+    setSmartLoading(true)
+    setSmartError(null)
+    try {
+      const { data } = await api.post<{ posts: FeedPost[]; explanation: string; fallback?: boolean }>(
+        '/api/posts/smart-search', { prompt: q }
+      )
+      if (id !== smartReqIdRef.current) return // stale — a newer request is in flight
+      setSmartResults(data.posts)
+      setSmartExplanation(data.explanation)
+      if (data.fallback) {
+        setSmartError('Smart search had a problem. Showing basic results instead.')
+      }
+      const likeSeed: Record<string, { liked: boolean; count: number }> = {}
+      const saveSeed: Record<string, { saved: boolean }> = {}
+      data.posts.forEach(p => {
+        likeSeed[p._id] = { liked: false, count: p.likesCount }
+        saveSeed[p._id] = { saved: p.isSaved ?? false }
+      })
+      setLikeState(prev => ({ ...likeSeed, ...prev }))
+      setSaveState(prev => ({ ...saveSeed, ...prev }))
+    } catch {
+      if (id !== smartReqIdRef.current) return
+      // Keep any previous results visible; just surface the error
+      setSmartError('Smart search had a problem. Showing basic results instead.')
+    } finally {
+      if (id === smartReqIdRef.current) setSmartLoading(false)
+    }
+  }
+
+  // Manual Search button / Enter key — cancel pending debounce and fire immediately
+  function handleSmartSearch() {
+    if (smartDebounceRef.current) clearTimeout(smartDebounceRef.current)
+    const q = smartQuery.trim()
+    if (!q || q.length < 3) return
+    runSmartSearch(q)
+  }
+
+  function clearSmartSearch() {
+    if (smartDebounceRef.current) clearTimeout(smartDebounceRef.current)
+    smartReqIdRef.current++ // invalidate any in-flight request
+    setSmartQuery('')
+    setSmartResults(null)
+    setSmartExplanation(null)
+    setSmartError(null)
+    setSmartLoading(false)
+  }
+
+  const displayPosts = smartResults ?? posts
+
   return (
     <div className="feed-page">
       {feedSaveError && (
@@ -147,6 +225,40 @@ export default function FeedPage() {
         </div>
       </section>
 
+      {/* ── Smart Search ── */}
+      <div className="feed-smart-search-wrap">
+        <div className="feed-smart-search-inner">
+          <svg className="feed-smart-search-sparkle" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          <input
+            className="feed-smart-search-input"
+            type="text"
+            placeholder="Try: '70s denim jacket under $80' or 'like-new jewelry by Chanel'"
+            value={smartQuery}
+            onChange={e => setSmartQuery(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSmartSearch()}
+            aria-label="Smart natural language search"
+          />
+          {smartQuery && !smartLoading && (
+            <button className="feed-smart-search-clear" onClick={clearSmartSearch} aria-label="Clear search">
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+          <button
+            className="feed-smart-search-btn"
+            onClick={handleSmartSearch}
+            disabled={!smartQuery.trim() || smartLoading}
+            aria-label="Run smart search"
+          >
+            {smartLoading ? <span className="feed-smart-spinner" aria-hidden="true" /> : 'Search'}
+          </button>
+        </div>
+        {smartError && <p className="feed-smart-error" role="alert">{smartError}</p>}
+      </div>
+
       {/* ── Category strip ── */}
       <div className="feed-categories-wrap">
         <div className="feed-categories">
@@ -166,12 +278,29 @@ export default function FeedPage() {
       <section className="feed-section" id="feed-grid">
         <div className="feed-section-header">
           <div>
-            <h2 className="feed-section-title">Featured Finds</h2>
-            <p className="feed-section-sub">Hand-picked treasures from our community</p>
+            <h2 className="feed-section-title">
+              {smartLoading ? 'Searching…' : smartResults ? 'Search Results' : 'Featured Finds'}
+            </h2>
+            <p className="feed-section-sub">
+              {!smartResults
+                ? 'Hand-picked treasures from our community'
+                : smartLoading ? ''
+                : `${smartResults.length} item${smartResults.length === 1 ? '' : 's'} found`}
+            </p>
           </div>
         </div>
 
-        {loading ? (
+        {smartExplanation && (
+          <div className="feed-smart-banner" role="status">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span className="feed-smart-banner-text">{smartExplanation}</span>
+            <button className="feed-smart-banner-clear" onClick={clearSmartSearch}>Clear</button>
+          </div>
+        )}
+
+        {loading && !smartResults ? (
           <div className="feed-grid">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="feed-card feed-card--skeleton">
@@ -183,17 +312,17 @@ export default function FeedPage() {
               </div>
             ))}
           </div>
-        ) : posts.length === 0 ? (
+        ) : displayPosts.length === 0 ? (
           <div className="feed-empty">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M13.5 3.75h6m-3-3v6M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5H4.5A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
             </svg>
-            <p className="feed-empty-title">No sells yet.</p>
-            <p className="feed-empty-sub">Be the first to post something vintage.</p>
+            <p className="feed-empty-title">{smartResults ? 'No results found.' : 'No sells yet.'}</p>
+            <p className="feed-empty-sub">{smartResults ? 'Try rephrasing your search.' : 'Be the first to post something vintage.'}</p>
           </div>
         ) : (
           <div className="feed-grid">
-            {posts.map(post => {
+            {displayPosts.map(post => {
               const imgSrc = post.images?.[0]
                 ? `${import.meta.env.VITE_API_URL}${post.images[0]}`
                 : null
