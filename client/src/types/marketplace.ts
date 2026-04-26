@@ -10,12 +10,13 @@
  * Sold    – the transaction has been completed and the item is no longer available.
  * Inactive – the seller has hidden the listing without deleting it.
  */
-export enum ListingStatus {
-  Active   = 'active',
-  Pending  = 'pending',
-  Sold     = 'sold',
-  Inactive = 'inactive',
-}
+export const ListingStatus = {
+  Active:   'active',
+  Pending:  'pending',
+  Sold:     'sold',
+  Inactive: 'inactive',
+} as const;
+export type ListingStatus = typeof ListingStatus[keyof typeof ListingStatus];
 
 /**
  * The state of a single offer made by a buyer on a listing.
@@ -25,12 +26,13 @@ export enum ListingStatus {
  * Declined  – seller rejected; the listing remains active.
  * Cancelled – buyer withdrew before the seller responded.
  */
-export enum OfferStatus {
-  Pending   = 'pending',
-  Accepted  = 'accepted',
-  Declined  = 'declined',
-  Cancelled = 'cancelled',
-}
+export const OfferStatus = {
+  Pending:   'pending',
+  Accepted:  'accepted',
+  Declined:  'declined',
+  Cancelled: 'cancelled',
+} as const;
+export type OfferStatus = typeof OfferStatus[keyof typeof OfferStatus];
 
 /**
  * The state of a transaction created after an offer is accepted.
@@ -40,21 +42,23 @@ export enum OfferStatus {
  * Cancelled – called off after the offer was accepted.
  * Disputed  – one party raised a dispute; sale is under review.
  */
-export enum TransactionStatus {
-  Pending   = 'pending',
-  Completed = 'completed',
-  Cancelled = 'cancelled',
-  Disputed  = 'disputed',
-}
+export const TransactionStatus = {
+  Pending:   'pending',
+  Completed: 'completed',
+  Cancelled: 'cancelled',
+  Disputed:  'disputed',
+} as const;
+export type TransactionStatus = typeof TransactionStatus[keyof typeof TransactionStatus];
 
 /**
  * Payment method chosen by the buyer when creating a transaction.
  */
-export enum PaymentMethod {
-  Cash         = 'cash',
-  BankTransfer = 'bank_transfer',
-  Other        = 'other',
-}
+export const PaymentMethod = {
+  Cash:         'cash',
+  BankTransfer: 'bank_transfer',
+  Other:        'other',
+} as const;
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 
 /* ════════════════════════════════════════════════════════════
    SHARED PARTIALS
