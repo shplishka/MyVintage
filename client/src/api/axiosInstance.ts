@@ -1,8 +1,9 @@
 import axios from 'axios'
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-})
+// No baseURL — all paths are relative (/api/...).
+// In development Vite proxies /api and /media to the local backend.
+// In production nginx proxies /api and /media to the backend server.
+const api = axios.create()
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
@@ -43,10 +44,7 @@ api.interceptors.response.use(
 
     try {
       const refreshToken = localStorage.getItem('refreshToken')
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
-        { refreshToken },
-      )
+      const { data } = await axios.post('/api/auth/refresh', { refreshToken })
 
       const newAccessToken: string = data.accessToken ?? data.token
       localStorage.setItem('accessToken', newAccessToken)
