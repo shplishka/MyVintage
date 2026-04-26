@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import Comment from '../models/Comment';
+import { Types } from 'mongoose';
+import Comment, { IComment } from '../models/Comment';
 import Post from '../models/Post';
 
 export const addComment = async (req: Request, res: Response): Promise<void> => {
@@ -10,19 +11,26 @@ export const addComment = async (req: Request, res: Response): Promise<void> => 
         return;
     }
 
-    const post = await Post.findById(req.params.postId);
+    const postId = req.params.postId as string;
+
+    if (!Types.ObjectId.isValid(postId)) {
+        res.status(400).json({ message: 'Invalid post id' });
+        return;
+    }
+
+    const post = await Post.findById(postId);
     if (!post) {
         res.status(404).json({ message: 'Post not found' });
         return;
     }
 
-    const comment = await Comment.create({
-        post:    req.params.postId,
-        author:  req.jwtUser!.userId,
+    const comment: IComment = await Comment.create({
+        post:    new Types.ObjectId(postId),
+        author:  new Types.ObjectId(req.jwtUser!.userId),
         content,
     });
 
-    await Post.findByIdAndUpdate(req.params.postId, { $inc: { commentsCount: 1 } });
+    await Post.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
 
     await comment.populate('author', 'username profilePicture');
     res.status(201).json(comment);

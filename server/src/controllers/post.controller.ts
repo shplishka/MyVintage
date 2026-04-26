@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import Post, { PostStatus } from '../models/Post';
 import Offer from '../models/Offer';
 import { OfferStatus } from '../types/marketplace';
@@ -191,7 +192,12 @@ export const uploadPostImages = async (req: Request, res: Response): Promise<voi
 
 export const toggleLike = async (req: Request, res: Response): Promise<void> => {
     const userId = req.jwtUser!.userId;
-    const postId = req.params.id;
+    const postId = req.params.id as string;
+
+    if (!Types.ObjectId.isValid(postId)) {
+        res.status(400).json({ message: 'Invalid post id' });
+        return;
+    }
 
     const postExists = await Post.exists({ _id: postId });
     if (!postExists) {
@@ -210,7 +216,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         );
         res.json({ liked: false, likesCount: updated!.likesCount });
     } else {
-        await Like.create({ post: postId, user: userId });
+        await Like.create({ post: new Types.ObjectId(postId), user: new Types.ObjectId(userId) });
         const updated = await Post.findByIdAndUpdate(
             postId,
             { $inc: { likesCount: 1 } },
