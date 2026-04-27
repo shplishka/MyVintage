@@ -6,6 +6,7 @@
   "scripts": {
     "start": "tsc && node --env-file=.env ./dist/src/app.js",
     "dev": "nodemon --exec ts-node ./src/app.ts",
+    "seed": "ts-node seed/seed.ts",
     "test": "tsc && jest --runInBand --detectOpenHandles --forceExit"
   },
   "repository": {

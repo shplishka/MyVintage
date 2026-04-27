@@ -1,0 +1,30 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: myvintage-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: mongosh --quiet --eval "db.runCommand('ping').ok"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  seed:
+    image: node:22-slim
+    container_name: myvintage-seed
+    working_dir: /app
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/myvintage
+    volumes:
+      - ./server:/app
+    command: npx ts-node seed/seed.ts
+    restart: "no"
+
+volumes:
+  mongo-data:

@@ -1,8 +1,10 @@
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 import express, { Application } from 'express';
 import cors from 'cors';
 import passport from 'passport';
-import dotenv from "dotenv";
-import path from "path";
 import swaggerUi from 'swagger-ui-express';
 import connectDB from './services/db';
 import { configurePassport } from './config/passport';
@@ -13,7 +15,6 @@ import commentRoutes from './routes/comment.routes';
 import offerRoutes from './routes/offer.routes';
 import transactionRoutes from './routes/transaction.routes';
 import swaggerSpec from './config/swagger';
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 configurePassport();
 

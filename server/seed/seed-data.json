@@ -1,0 +1,984 @@
+{
+  "users": [
+    {
+      "_id": "000000000000000000000001",
+      "username": "admin",
+      "email": "admin@admin.com",
+      "password": "admin",
+      "authProvider": "local",
+      "biography": "Platform administrator and vintage enthusiast.",
+      "location": "Tel Aviv, Israel",
+      "rating": 4.8,
+      "reviewCount": 12,
+      "itemsSold": 35,
+      "savedPosts": []
+    },
+    {
+      "_id": "69ee742c1f44e0d2d15b87dc",
+      "username": "vered",
+      "email": "v@gmail.com",
+      "password": "password123",
+      "authProvider": "local",
+      "biography": "",
+      "location": "",
+      "rating": 0,
+      "reviewCount": 0,
+      "itemsSold": 0,
+      "savedPosts": []
+    },
+    {
+      "_id": "69ee74741f44e0d2d15b87f0",
+      "username": "Vered Ben David",
+      "email": "vered054819@gmail.com",
+      "password": "password123",
+      "authProvider": "local",
+      "biography": "Hi, I’m a tech enthusiast and I have a lot of second-hand gadgets.\nYou’re welcome to check them out!",
+      "location": "Tel Aviv, Israel",
+      "rating": 0,
+      "reviewCount": 0,
+      "itemsSold": 0,
+      "savedPosts": [
+        "69ee7fa0868d3c8714a41101",
+        "69ee7eec868d3c8714a410fe"
+      ]
+    },
+    {
+      "_id": "69ee7d30868d3c8714a410f7",
+      "username": "lir",
+      "email": "lir@gmail.com",
+      "password": "password123",
+      "authProvider": "local",
+      "biography": "",
+      "location": "",
+      "rating": 0,
+      "reviewCount": 0,
+      "itemsSold": 0,
+      "savedPosts": []
+    },
+    {
+      "_id": "69ee8518868d3c8714a4110e",
+      "username": "miri",
+      "email": "miri@example.com",
+      "password": "password123",
+      "authProvider": "local",
+      "biography": "",
+      "location": "",
+      "rating": 0,
+      "reviewCount": 0,
+      "itemsSold": 0,
+      "savedPosts": []
+    },
+    {
+      "_id": "69ef616c4fd21affb875917b",
+      "username": "Romi Abramovich",
+      "email": "romi@gmail.com",
+      "password": "password123",
+      "authProvider": "local",
+      "biography": "Hi, I’m Romi I love fashion and tech, and I sell high-quality second-hand items in great condition. Feel free to reach out with any questions!",
+      "location": "Ashdod, Israel",
+      "rating": 0,
+      "reviewCount": 0,
+      "itemsSold": 0,
+      "savedPosts": []
+    }
+  ],
+  "posts": [
+    {
+      "seller": "69ef616c4fd21affb875917b",
+      "title": "Oak Wood Table",
+      "description": "Beautiful oak wood table in excellent condition. Sturdy, durable, and with a timeless natural finish. Perfect for dining or as a stylish centerpiece for your home.",
+      "category": "accessories",
+      "price": 150,
+      "condition": "like_new",
+      "year": 2025,
+      "brand": "Modern",
+      "style": "Modern",
+      "images": [
+        "69ef62fb4fd21affb8759180_b86814ff-b4cb-4f8a-bcb9-4a2e3e123b57.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ef616c4fd21affb875917b",
+      "title": "White Dinnerware Set",
+      "description": "Elegant white dinnerware set in great condition. Classic and versatile design, perfect for everyday use or hosting. Clean, well maintained, and ready to use.",
+      "category": "accessories",
+      "price": 50,
+      "condition": "good",
+      "year": 2025,
+      "brand": "FOX HOME",
+      "style": "Elegant",
+      "images": [
+        "69ef62b44fd21affb875917f_3df45294-2042-49d9-9ec9-a9919bc07a6d.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ef616c4fd21affb875917b",
+      "title": "Bosch Refrigerator",
+      "description": "High-quality Bosch refrigerator in excellent condition. Spacious, reliable, and energy-efficient – perfect for everyday use. Well maintained and fully functional.",
+      "category": "electronics",
+      "price": 1000,
+      "condition": "like_new",
+      "year": 2025,
+      "brand": "Bosch",
+      "style": "High-quality",
+      "images": [
+        "69ef627c4fd21affb875917e_caf6afdb-2bab-4a89-82de-2858cb332998.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee8518868d3c8714a4110e",
+      "title": "Vintage Levi's Jacket",
+      "description": "Great condition denim jacket from the 80s",
+      "category": "clothing",
+      "price": 75,
+      "condition": "like_new",
+      "year": 1985,
+      "brand": "Levi's",
+      "style": "Casual",
+      "images": [
+        "seed0000000000000000000000_05330d1e-bfe7-4fb9-909e-7302ca4eaa42.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee74741f44e0d2d15b87f0",
+      "title": "Classic Luxury Style",
+      "description": "A timeless and elegant Prada handbag crafted from premium leather, featuring a structured silhouette and iconic design. Perfect for a sophisticated and polished look.",
+      "category": "accessories",
+      "price": 450,
+      "condition": "like_new",
+      "year": 2025,
+      "brand": "PRADA",
+      "style": "CASUAL",
+      "images": [
+        "69ee7fd0868d3c8714a41102_a0df5ad2-e51a-4aa3-bba7-0f035fa861da.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee7d30868d3c8714a410f7",
+      "title": "Comfort Sofa",
+      "description": "Elegant gray three-seat sofa, designed for comfort and style. Features soft fabric upholstery, plush cushioned seats and backrests, rolled arms, and decorative nailhead trim for a classic luxury look. A perfect addition to any living room, offering both durability and timeless charm.",
+      "category": "furniture",
+      "price": 200,
+      "condition": "fair",
+      "year": 2000,
+      "brand": "no brand",
+      "style": "Elegant",
+      "images": [
+        "69ee7fa0868d3c8714a41101_7a206125-c39f-4665-a46a-72e996af9bb5.webp"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee74741f44e0d2d15b87f0",
+      "title": "iPad",
+      "description": "A versatile and powerful tablet designed by Apple, perfect for work, study, and entertainment. Features a sleek design, high-resolution display, and smooth performance for browsing, streaming, note-taking, and more. Ideal for everyday use at home or on the go.",
+      "category": "electronics",
+      "price": 150,
+      "condition": "fair",
+      "year": 2022,
+      "brand": "APPLE",
+      "style": "IPAD",
+      "images": [
+        "69ee7f55868d3c8714a41100_c181609f-b77c-42b1-afff-9a26bb46ea5e.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee74741f44e0d2d15b87f0",
+      "title": "Pink Prom Dress",
+      "description": "An elegant and feminine pink prom dress, perfect for special occasions and formal events. Designed with a flattering silhouette, it may feature luxurious fabrics like satin, chiffon, or tulle, along with stylish details such as sequins, lace, or a high slit. A timeless and eye-catching choice for a glamorous evening look.",
+      "category": "clothing",
+      "price": 600,
+      "condition": "like_new",
+      "year": 2026,
+      "brand": "BERTA",
+      "style": "CLASSIC",
+      "images": [
+        "69ee7f1d868d3c8714a410ff_6abfb6dd-9aa5-41d3-9894-29069f79f1dd.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee7d30868d3c8714a410f7",
+      "title": "Rolex Watch",
+      "description": "Vintage Rolex watch in excellent condition, crafted with timeless elegance and exceptional quality. This classic timepiece features a refined design, reliable movement, and the prestigious craftsmanship Rolex is known for. Perfect for collectors or anyone looking for a sophisticated luxury watch with history, character, and lasting value.",
+      "category": "jewelry",
+      "price": 20000,
+      "condition": "like_new",
+      "year": 2002,
+      "brand": "Rolex",
+      "style": "Fancy",
+      "images": [
+        "69ee7eec868d3c8714a410fe_a170f7ec-1124-46e9-8d3c-33b4b50b9038.jpeg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee74741f44e0d2d15b87f0",
+      "title": "iPhone 15",
+      "description": "A sleek and powerful smartphone from Apple, featuring a 6.1-inch Super Retina XDR display, advanced 48MP camera, and the fast A16 Bionic chip. Designed with a modern look and USB-C connectivity, it delivers smooth performance, high-quality photos, and all-day battery life perfect for everyday use.",
+      "category": "electronics",
+      "price": 450,
+      "condition": "good",
+      "year": 2023,
+      "brand": "APPLE",
+      "style": "PHONE",
+      "images": [
+        "69ee7ee2868d3c8714a410fd_f34e5523-a962-4140-b1e1-77934d40e04c.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee74741f44e0d2d15b87f0",
+      "title": "Camping Tent",
+      "description": "A durable and easy-to-set-up camping tent, perfect for outdoor trips and adventures. Provides reliable protection from wind and light rain, with good ventilation for a comfortable sleeping experience. Ideal for camping, hiking, and travel.",
+      "category": "accessories",
+      "price": 300,
+      "condition": "excellent",
+      "year": 2026,
+      "brand": "Coleman",
+      "style": "Classic",
+      "images": [
+        "69ee7ea6868d3c8714a410fc_5ce4e290-1981-4893-80d0-547e72bd5556.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee7d30868d3c8714a410f7",
+      "title": "Cool guitar !!!!",
+      "description": "the coolest guitar, old but new !",
+      "category": "other",
+      "price": 30,
+      "condition": "excellent",
+      "year": 2009,
+      "brand": "no brand",
+      "style": "cool",
+      "images": [
+        "69ee7e0a868d3c8714a410fb_5789da9b-f3d4-4877-b975-fea9348d6661.png"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee74741f44e0d2d15b87f0",
+      "title": "Moana Movie",
+      "description": "Moana (DVD) – A fun and adventurous Disney animated movie about a brave girl who sets out on a journey across the ocean to save her people. Perfect for the whole family!",
+      "category": "electronics",
+      "price": 20,
+      "condition": "like_new",
+      "year": 2024,
+      "brand": "non",
+      "style": "Disney",
+      "images": [
+        "69ee75e41f44e0d2d15b881a_c41eb823-32a5-4f5c-b72a-a355b0195904.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "69ee742c1f44e0d2d15b87dc",
+      "title": "Gucci Heals",
+      "description": "The mist Beutiful heels !!!",
+      "category": "clothing",
+      "price": 999.95,
+      "condition": "like_new",
+      "year": 2024,
+      "brand": "Gucci",
+      "style": "Fancy",
+      "images": [
+        "69ee74dc1f44e0d2d15b87fb_a4a95ec2-70e6-437b-a42a-1c04f44a0acc.jpeg",
+        "69ee74dc1f44e0d2d15b87fb_d10df426-7a1d-4f77-b2bb-ad00bc22142d.jpeg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1960s Levi's 501 Selvedge Jeans",
+      "description": "Original pair of 1960s Levi's 501 jeans with selvedge denim. Big-E red tab. Some natural fading adds character. Waist 32, length 34.",
+      "category": "clothing",
+      "price": 320,
+      "condition": "good",
+      "year": 1965,
+      "brand": "Levi's",
+      "style": "Americana",
+      "images": [
+        "seed0000000000000000000000_6647997f-20d8-4aad-8597-3529f900490d.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Victorian Brass Desk Lamp",
+      "description": "Elegant brass desk lamp from the late Victorian era. Green glass shade with patina base. Fully rewired for modern use. Height 45cm.",
+      "category": "furniture",
+      "price": 185,
+      "condition": "excellent",
+      "year": 1890,
+      "brand": "Unknown",
+      "style": "Victorian",
+      "images": [
+        "seed0000000000000000000000_cae2be8e-cd6a-41bf-8f63-d079bd64900d.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1950s Ray-Ban Wayfarer Sunglasses",
+      "description": "Classic original Ray-Ban Wayfarer sunglasses from the 1950s. Tortoiseshell frame with original green lenses. Minor scratches on one lens.",
+      "category": "accessories",
+      "price": 250,
+      "condition": "good",
+      "year": 1956,
+      "brand": "Ray-Ban",
+      "style": "Mid-Century",
+      "images": [
+        "seed0000000000000000000000_d2a8fe7b-df13-4a6f-8d02-5f253de122a2.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Art Deco Diamond Brooch",
+      "description": "Stunning Art Deco diamond and platinum brooch, circa 1925. Geometric design with 0.8ct total diamond weight. Comes with original velvet box.",
+      "category": "jewelry",
+      "price": 1200,
+      "condition": "excellent",
+      "year": 1925,
+      "brand": "Cartier",
+      "style": "Art Deco",
+      "images": [
+        "seed0000000000000000000000_4928074a-7b8d-42ff-aa1e-4d034a79f891.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Mid-Century Teak Coffee Table",
+      "description": "Scandinavian design teak coffee table from the 1960s. Clean lines, tapered legs. Some surface marks consistent with age. 120cm x 55cm.",
+      "category": "furniture",
+      "price": 450,
+      "condition": "good",
+      "year": 1963,
+      "brand": "Danish Deluxe",
+      "style": "Mid-Century Modern",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1970s Polaroid SX-70 Camera",
+      "description": "Iconic Polaroid SX-70 folding SLR instant camera in chrome and tan leather. Fully functional, tested with film. A real conversation piece.",
+      "category": "electronics",
+      "price": 280,
+      "condition": "good",
+      "year": 1972,
+      "brand": "Polaroid",
+      "style": "Retro",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "First Edition 'The Great Gatsby'",
+      "description": "1925 first edition of F. Scott Fitzgerald's The Great Gatsby. Some foxing on pages, binding tight. Dust jacket is a later reproduction.",
+      "category": "books",
+      "price": 3500,
+      "condition": "fair",
+      "year": 1925,
+      "brand": "Scribner's",
+      "style": "Literary",
+      "images": [
+        "seed0000000000000000000000_399df717-e883-4b81-914f-098c6f874805.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1940s Hermes Silk Scarf",
+      "description": "Beautiful silk scarf by Hermes featuring an equestrian motif. Vibrant colors still intact. Hand-rolled edges. 90cm x 90cm.",
+      "category": "accessories",
+      "price": 420,
+      "condition": "excellent",
+      "year": 1948,
+      "brand": "Hermès",
+      "style": "Luxury Vintage",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Bauhaus Steel Tube Chair",
+      "description": "Marcel Breuer inspired cantilever chair with chrome tubular steel frame and black leather seat. Excellent structural integrity.",
+      "category": "furniture",
+      "price": 380,
+      "condition": "excellent",
+      "year": 1970,
+      "brand": "Knoll",
+      "style": "Bauhaus",
+      "images": [
+        "seed0000000000000000000000_b59d5274-0977-4f06-b30f-0ac45b50fd7c.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1980s Casio G-Shock DW-5000C",
+      "description": "The original G-Shock from 1983. Square face, digital display. Battery replaced recently. Some wear on the resin band but fully functional.",
+      "category": "accessories",
+      "price": 550,
+      "condition": "good",
+      "year": 1983,
+      "brand": "Casio",
+      "style": "Retro Digital",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Oil Painting – Parisian Street Scene",
+      "description": "Original oil on canvas depicting a rainy Parisian boulevard. Signed by the artist. Gilt frame included. 60cm x 80cm.",
+      "category": "art",
+      "price": 750,
+      "condition": "good",
+      "year": 1935,
+      "brand": "Unknown Artist",
+      "style": "Impressionist",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1950s Chanel Tweed Jacket",
+      "description": "Classic Chanel boucle tweed jacket in pastel pink. Gold-tone buttons with CC logo. Silk lining. French size 38.",
+      "category": "clothing",
+      "price": 1800,
+      "condition": "excellent",
+      "year": 1957,
+      "brand": "Chanel",
+      "style": "Classic French",
+      "images": [
+        "seed0000000000000000000000_93e09b13-8d38-40fa-8603-9a47a43f2ae2.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Edwardian Pearl Necklace",
+      "description": "Graduated natural pearl necklace with a gold clasp. 42cm length. Warm ivory lustre. Comes with a gemological certificate.",
+      "category": "jewelry",
+      "price": 2200,
+      "condition": "excellent",
+      "year": 1910,
+      "brand": "Tiffany & Co.",
+      "style": "Edwardian",
+      "images": [
+        "seed0000000000000000000000_2c9dabfe-76ed-4f29-a0a9-73aa25faf508.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1970s Pioneer SX-780 Receiver",
+      "description": "Vintage Pioneer stereo receiver. 45 watts per channel, warm analog sound. Wood veneer cabinet. Serviced with new capacitors.",
+      "category": "electronics",
+      "price": 340,
+      "condition": "excellent",
+      "year": 1978,
+      "brand": "Pioneer",
+      "style": "Hi-Fi",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Signed Hemingway 'The Old Man and the Sea'",
+      "description": "First edition signed by Ernest Hemingway. Slight wear on dust jacket spine. Pages clean and bright. A prized collector's item.",
+      "category": "books",
+      "price": 8500,
+      "condition": "good",
+      "year": 1952,
+      "brand": "Charles Scribner's Sons",
+      "style": "Literary",
+      "images": [
+        "seed0000000000000000000000_2a86e7ba-9b4e-41bc-8487-ddc6407060de.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1930s Art Deco Cocktail Shaker",
+      "description": "Chrome-plated Art Deco cocktail shaker with geometric engravings. Built-in strainer. Polished to a mirror finish. 28cm tall.",
+      "category": "other",
+      "price": 165,
+      "condition": "excellent",
+      "year": 1935,
+      "brand": "Unknown",
+      "style": "Art Deco",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1960s Mod Mini Dress – Mary Quant Style",
+      "description": "Bold geometric print mini dress in orange and white. Zip-back closure. True 1960s mod fashion. UK size 10.",
+      "category": "clothing",
+      "price": 220,
+      "condition": "good",
+      "year": 1967,
+      "brand": "Mary Quant",
+      "style": "Mod",
+      "images": [
+        "seed0000000000000000000000_3a5f82ae-9d47-40f3-b394-a8b24effc0f8.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Murano Glass Vase – Sommerso Technique",
+      "description": "Hand-blown Murano glass vase using the sommerso submerged color technique. Deep blue core with amber outer layer. 30cm tall.",
+      "category": "art",
+      "price": 320,
+      "condition": "like_new",
+      "year": 1975,
+      "brand": "Murano",
+      "style": "Italian Glass Art",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1940s Military Field Watch",
+      "description": "WWII-era military field watch with manual-wind movement. Radium dial numerals, canvas strap. Keeps accurate time after servicing.",
+      "category": "accessories",
+      "price": 480,
+      "condition": "good",
+      "year": 1944,
+      "brand": "Elgin",
+      "style": "Military",
+      "images": [
+        "seed0000000000000000000000_634f5bd0-167e-4d98-aece-a4924b472793.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Eames Lounge Chair Replica (1970s)",
+      "description": "High-quality 1970s replica of the iconic Eames lounge chair. Rosewood veneer shell, black leather cushions. Ottoman included.",
+      "category": "furniture",
+      "price": 950,
+      "condition": "good",
+      "year": 1974,
+      "brand": "Herman Miller",
+      "style": "Mid-Century Modern",
+      "images": [
+        "seed0000000000000000000000_a4630c2e-0d40-4925-8586-a82385566479.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1920s Flapper Beaded Evening Bag",
+      "description": "Exquisite hand-beaded evening bag from the Roaring Twenties. Silver and black glass beads. Silver-tone frame with kiss-lock closure.",
+      "category": "accessories",
+      "price": 290,
+      "condition": "good",
+      "year": 1925,
+      "brand": "Unknown",
+      "style": "Art Deco",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Sony Walkman TPS-L2 (1979)",
+      "description": "The original Sony Walkman that started a revolution. Blue and silver. Includes original headphones. Belt clip intact. Plays tapes perfectly.",
+      "category": "electronics",
+      "price": 600,
+      "condition": "good",
+      "year": 1979,
+      "brand": "Sony",
+      "style": "Retro Tech",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Vintage Persian Tabriz Rug",
+      "description": "Hand-knotted Persian Tabriz rug with intricate floral medallion design. Rich reds and navy blues. 200cm x 300cm. Minor edge wear.",
+      "category": "furniture",
+      "price": 1600,
+      "condition": "good",
+      "year": 1950,
+      "brand": "Persian",
+      "style": "Oriental",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1950s Bakelite Bangle Set",
+      "description": "Set of 5 marbled Bakelite bangles in butterscotch, red, and green. All test positive for genuine Bakelite. Great stacking set.",
+      "category": "jewelry",
+      "price": 175,
+      "condition": "excellent",
+      "year": 1955,
+      "brand": "Unknown",
+      "style": "Retro",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Vintage 'Brave New World' First UK Edition",
+      "description": "Aldous Huxley's Brave New World, first UK edition by Chatto & Windus, 1932. Yellow cloth boards. Some shelf wear but text block solid.",
+      "category": "books",
+      "price": 4200,
+      "condition": "fair",
+      "year": 1932,
+      "brand": "Chatto & Windus",
+      "style": "Literary",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1970s Gucci Jackie Bag",
+      "description": "Iconic Gucci Jackie hobo bag in tan leather with signature piston-lock closure. Gold hardware. Interior suede lining. Some patina on leather.",
+      "category": "accessories",
+      "price": 680,
+      "condition": "good",
+      "year": 1975,
+      "brand": "Gucci",
+      "style": "Luxury Vintage",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Japanese Woodblock Print – Hokusai Wave",
+      "description": "Meiji-era restrike of Hokusai's Great Wave off Kanagawa. Woodblock on washi paper. Framed in simple black wood. 35cm x 25cm.",
+      "category": "art",
+      "price": 520,
+      "condition": "good",
+      "year": 1900,
+      "brand": "Unknown",
+      "style": "Ukiyo-e",
+      "images": [
+        "seed0000000000000000000000_55d6046b-3859-4042-9a8f-8b6a8e2a2797.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1980s Members Only Racer Jacket",
+      "description": "Classic Members Only jacket in navy blue. Snap-tab collar, ribbed cuffs and waistband. Size medium. The quintessential 80s jacket.",
+      "category": "clothing",
+      "price": 85,
+      "condition": "excellent",
+      "year": 1985,
+      "brand": "Members Only",
+      "style": "Preppy",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1960s Rotary Telephone – Red",
+      "description": "Bright red rotary dial telephone from the 1960s. Heavy Bakelite body. Fully functional when connected to a landline. A retro statement piece.",
+      "category": "electronics",
+      "price": 120,
+      "condition": "good",
+      "year": 1964,
+      "brand": "Western Electric",
+      "style": "Retro",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Antique Silver Pocket Watch",
+      "description": "Sterling silver hunter-case pocket watch with Roman numeral dial. Key-wind movement runs smoothly. Hallmarked Birmingham 1885.",
+      "category": "accessories",
+      "price": 350,
+      "condition": "good",
+      "year": 1885,
+      "brand": "J.W. Benson",
+      "style": "Victorian",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1970s Velvet Bell-Bottom Pants",
+      "description": "Crushed velvet bell-bottoms in deep burgundy. High waist, wide flare. Size 28 waist. Perfect for a disco revival look.",
+      "category": "clothing",
+      "price": 95,
+      "condition": "good",
+      "year": 1974,
+      "brand": "Landlubber",
+      "style": "Disco",
+      "images": [
+        "seed0000000000000000000000_319ecb5a-244c-4d1d-8ca0-b6cf9b6c1f6d.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Art Nouveau Bronze Figurine",
+      "description": "Bronze figurine of a dancing woman in flowing dress. Art Nouveau styling. Dark patina. Marble base. Signed. 35cm tall.",
+      "category": "art",
+      "price": 680,
+      "condition": "excellent",
+      "year": 1905,
+      "brand": "Unknown",
+      "style": "Art Nouveau",
+      "images": [
+        "seed0000000000000000000000_5536a95f-cb69-4287-b156-016825a5bdad.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1940s Swing Era Fedora Hat",
+      "description": "Men's felt fedora in charcoal grey with a wide grosgrain ribbon band. Worn brim for an authentic vintage look. Size 7 1/4.",
+      "category": "accessories",
+      "price": 110,
+      "condition": "fair",
+      "year": 1942,
+      "brand": "Stetson",
+      "style": "Swing Era",
+      "images": [
+        "seed0000000000000000000000_073d8554-9cf9-4a0a-890d-41e18d61cec5.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Chippendale Mahogany Side Table",
+      "description": "George III-style mahogany side table with ball-and-claw feet. Single drawer with brass pull. Rich warm patina. 65cm x 45cm x 72cm.",
+      "category": "furniture",
+      "price": 520,
+      "condition": "good",
+      "year": 1920,
+      "brand": "Unknown",
+      "style": "Georgian",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Vintage Turquoise and Silver Ring",
+      "description": "Navajo-crafted sterling silver ring with natural turquoise stone. Handmade with stamp work detail on the band. Size 8.",
+      "category": "jewelry",
+      "price": 195,
+      "condition": "excellent",
+      "year": 1970,
+      "brand": "Navajo Handcraft",
+      "style": "Southwestern",
+      "images": [
+        "seed0000000000000000000000_eaeacc95-68dd-4f4c-8522-1fb89acfbbca.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1990s Gameboy Color – Teal",
+      "description": "Nintendo Gameboy Color in teal/turquoise. Screen is bright and clear. Includes Tetris cartridge. Battery cover intact.",
+      "category": "electronics",
+      "price": 95,
+      "condition": "good",
+      "year": 1998,
+      "brand": "Nintendo",
+      "style": "Retro Gaming",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1930s Depression Glass Dessert Set",
+      "description": "Set of 6 pink Depression-era glass dessert bowls in the Cherry Blossom pattern. All pieces in excellent condition, no chips or cracks.",
+      "category": "other",
+      "price": 140,
+      "condition": "excellent",
+      "year": 1935,
+      "brand": "Jeanette Glass",
+      "style": "Depression Era",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1950s Dior 'New Look' Skirt Suit",
+      "description": "Stunning cream wool skirt suit in the iconic Dior New Look silhouette. Nipped waist, full skirt. Minor moth repair on sleeve lining.",
+      "category": "clothing",
+      "price": 2400,
+      "condition": "good",
+      "year": 1952,
+      "brand": "Christian Dior",
+      "style": "New Look",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Antique Map – Mediterranean 1780",
+      "description": "Hand-colored copperplate engraving of the Mediterranean Sea, circa 1780. Latin text cartouche. Framed under UV glass. 50cm x 70cm.",
+      "category": "art",
+      "price": 430,
+      "condition": "good",
+      "year": 1780,
+      "brand": "Unknown Cartographer",
+      "style": "Cartography",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1960s Omega Seamaster De Ville",
+      "description": "Gold-capped Omega Seamaster De Ville with silver sunburst dial. Cal. 562 automatic movement. Recently serviced. 34mm case.",
+      "category": "accessories",
+      "price": 1100,
+      "condition": "excellent",
+      "year": 1966,
+      "brand": "Omega",
+      "style": "Classic Dress",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Leather-Bound Encyclopedia Britannica (1911)",
+      "description": "Complete 11th edition, 29 volumes. Full calf leather binding with gilt spines. The legendary 'Scholar's Edition'. Some foxing on endpapers.",
+      "category": "books",
+      "price": 1800,
+      "condition": "good",
+      "year": 1911,
+      "brand": "Encyclopaedia Britannica",
+      "style": "Reference",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1980s Versace Silk Shirt",
+      "description": "Bold baroque-print silk shirt by Gianni Versace. Gold Medusa buttons. Italian size 50 (US L). Quintessential 80s luxury.",
+      "category": "clothing",
+      "price": 380,
+      "condition": "excellent",
+      "year": 1988,
+      "brand": "Versace",
+      "style": "Italian Luxury",
+      "images": [
+        "seed0000000000000000000000_146ac8ea-273a-4d8c-be57-8836f1ba0d93.jpg"
+      ],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Vintage Globe Bar Cabinet",
+      "description": "Italian-made globe bar on a carved wooden stand. Opens to reveal a fitted interior for bottles and glasses. 45cm diameter globe.",
+      "category": "furniture",
+      "price": 290,
+      "condition": "good",
+      "year": 1965,
+      "brand": "Zoffoli",
+      "style": "Italian Renaissance",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Amber and Gold Victorian Brooch",
+      "description": "Natural Baltic amber cabochon set in 9ct gold with seed pearl surround. Warm honey color with insect inclusion visible. Hallmarked 1880.",
+      "category": "jewelry",
+      "price": 340,
+      "condition": "excellent",
+      "year": 1880,
+      "brand": "Unknown",
+      "style": "Victorian",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1970s Technics SL-1200 Turntable",
+      "description": "The legendary Technics SL-1200 MK2 direct-drive turntable. Near mint condition. Includes dust cover and original Technics headshell.",
+      "category": "electronics",
+      "price": 750,
+      "condition": "excellent",
+      "year": 1979,
+      "brand": "Technics",
+      "style": "Hi-Fi / DJ",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1950s Fiesta Ware Pitcher – Red",
+      "description": "Vintage Fiesta Ware disc water pitcher in original radioactive red glaze. No chips or hairline cracks. Homer Laughlin stamp on base.",
+      "category": "other",
+      "price": 180,
+      "condition": "excellent",
+      "year": 1955,
+      "brand": "Homer Laughlin",
+      "style": "Mid-Century Kitchenware",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1940s Leather Bomber Jacket – Type A-2",
+      "description": "WWII-era Type A-2 flight jacket in horsehide leather. Beautiful wear and patina. Knit cuffs and waistband intact. Size 40.",
+      "category": "clothing",
+      "price": 900,
+      "condition": "good",
+      "year": 1943,
+      "brand": "Rough Wear",
+      "style": "Military",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Andy Warhol 'Flowers' Lithograph",
+      "description": "Offset lithograph from the 1964 Flowers series. Vibrant colors on heavy stock paper. Unsigned, from a large edition. 60cm x 60cm.",
+      "category": "art",
+      "price": 850,
+      "condition": "excellent",
+      "year": 1964,
+      "brand": "Andy Warhol",
+      "style": "Pop Art",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "Copper Moscow Mule Mug Set (1950s)",
+      "description": "Set of 4 original copper Moscow Mule mugs with brass handles. Beautiful natural patina. Each holds 500ml. Made in USA.",
+      "category": "other",
+      "price": 120,
+      "condition": "good",
+      "year": 1955,
+      "brand": "Cock 'n Bull",
+      "style": "Mid-Century Barware",
+      "images": [],
+      "status": "active"
+    },
+    {
+      "seller": "000000000000000000000001",
+      "title": "1960s Psychedelic Concert Poster",
+      "description": "Original Fillmore West concert poster advertising Jimi Hendrix, 1968. Psychedelic art by Wes Wilson. Vibrant neon colors on heavy stock. 50cm x 70cm.",
+      "category": "art",
+      "price": 400,
+      "condition": "good",
+      "year": 1968,
+      "brand": "Fillmore West",
+      "style": "Psychedelic",
+      "images": [],
+      "status": "active"
+    }
+  ]
+}

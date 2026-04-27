@@ -8,12 +8,12 @@ export default defineConfig({
     proxy: {
       // API calls — backend routes are mounted at /api/..., so do NOT rewrite the path.
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
       // Static media uploads served by the backend at /media/...
       '/media': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
     },
