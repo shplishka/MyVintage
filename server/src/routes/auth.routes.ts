@@ -1,6 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
+import passport from 'passport';
 import { register, login, refresh, logout, me } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth.middleware';
+import { googleCallback } from '../controllers/oauth.controller';
 
 const router = Router();
 
@@ -157,5 +159,31 @@ router.post('/logout', logout);
  *         description: User not found
  */
 router.get('/me', authenticate, me);
+
+/* ── Google OAuth ────────────────────────────────────────────
+   Step 1: redirect the browser to Google's consent screen.
+   Step 2: Google calls back and we issue a JWT pair, then
+           redirect the user to the frontend /auth/callback page.
+─────────────────────────────────────────────────────────── */
+router.get(
+    '/google',
+    passport.authenticate('google', { scope: ['profile', 'email'], session: false })
+);
+
+router.get('/google/callback', (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate(
+        'google',
+        { session: false },
+        async (err: Error | null, user: Express.User | false) => {
+            if (err || !user) {
+                const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+                res.redirect(`${clientUrl}/auth/callback?error=oauth_failed`);
+                return;
+            }
+            (req as any).user = user;
+            next();
+        }
+    )(req, res, next);
+}, googleCallback);
 
 export default router;

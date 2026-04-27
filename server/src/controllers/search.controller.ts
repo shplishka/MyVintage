@@ -4,7 +4,7 @@ import { buildSearchPlan, SearchFilters } from '../services/ai';
 
 const VALID_CATEGORIES = ['clothing', 'accessories', 'jewelry', 'furniture', 'art', 'electronics', 'books', 'other'];
 const VALID_CONDITIONS  = ['like_new', 'excellent', 'good', 'fair', 'poor'];
-const GEMINI_TIMEOUT_MS = 10_000;
+const GEMINI_TIMEOUT_MS = 30_000;
 
 function escapeRegex(s: string): string {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

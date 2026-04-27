@@ -42,8 +42,10 @@ Rules:
 - Use lowercase for all enum values (category, condition).
 - keywords should contain the core descriptive terms not covered by other fields.`;
 
+// gemini-2.5-flash-lite: free-tier model confirmed working with this API key.
+// gemini-2.0-flash has free-tier quota = 0 on this key and returns 429 on every call.
 const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash-lite',
     systemInstruction: SYSTEM_PROMPT,
     generationConfig: {
         responseMimeType: 'application/json',
@@ -70,14 +72,22 @@ export interface SearchPlan {
 export async function buildSearchPlan(prompt: string): Promise<SearchPlan> {
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-    const parsed = JSON.parse(text);
 
-    if (!parsed || typeof parsed !== 'object' || typeof parsed.explanation !== 'string') {
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(text);
+    } catch {
+        console.error('[ai] Gemini returned non-JSON response:', text.slice(0, 200));
+        throw new Error('AI returned invalid JSON');
+    }
+
+    if (!parsed || typeof parsed !== 'object' || typeof (parsed as any).explanation !== 'string') {
+        console.error('[ai] Gemini returned unexpected structure:', JSON.stringify(parsed).slice(0, 200));
         throw new Error('AI returned unexpected structure');
     }
 
     return {
-        filters: parsed.filters ?? {},
-        explanation: parsed.explanation,
+        filters: (parsed as any).filters ?? {},
+        explanation: (parsed as any).explanation,
     };
 }

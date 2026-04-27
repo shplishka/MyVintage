@@ -132,6 +132,31 @@
   background: #e8ddd0;
 }
 
+/* ── Google button ── */
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3b2314;
+  background: #fff;
+  border: 1px solid #ddd4c8;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.google-btn:hover {
+  background: #fdf6ec;
+  border-color: #c0a898;
+}
+
 /* ── Sign-up link ── */
 .login-signup-link {
   font-size: 14px;

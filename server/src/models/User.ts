@@ -1,33 +1,42 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+export type AuthProvider = 'local' | 'google' | 'facebook';
+
 export interface IUser extends Document {
-    username: string;
-    email: string;
-    password: string;
+    username:      string;
+    email:         string;
+    password?:     string;
+    authProvider:  AuthProvider;
+    googleId?:     string;
+    facebookId?:   string;
     profilePicture?: string;
-    biography?: string;
-    location?: string;
-    rating?: number;
-    reviewCount?: number;
-    itemsSold?: number;
+    biography?:    string;
+    location?:     string;
+    rating?:       number;
+    reviewCount?:  number;
+    itemsSold?:    number;
     /** Posts the user has bookmarked. */
-    savedPosts: Types.ObjectId[];
+    savedPosts:    Types.ObjectId[];
     comparePassword(candidate: string): Promise<boolean>;
 }
 
 const UserSchema = new Schema<IUser>(
     {
-        username:       { type: String, required: true, trim: true, unique: true, minLength: 2, maxLength: 20 },
-        email:          { type: String, required: true, unique: true, lowercase: true, trim: true },
-        password:       { type: String, required: true },
-        profilePicture: { type: String, default: null },
-        biography:      { type: String, default: null, trim: true },
-        location:       { type: String, default: null, trim: true },
-        rating:         { type: Number, default: 0, min: 0, max: 5 },
-        reviewCount:    { type: Number, default: 0, min: 0 },
-        itemsSold:      { type: Number, default: 0, min: 0 },
-        savedPosts:     { type: [Schema.Types.ObjectId], ref: 'Post', default: [] },
+        username:      { type: String, required: true, trim: true, unique: true, minLength: 2, maxLength: 20 },
+        email:         { type: String, required: true, unique: true, lowercase: true, trim: true },
+        // Optional for OAuth users; local register validates in controller.
+        password:      { type: String },
+        authProvider:  { type: String, enum: ['local', 'google', 'facebook'], default: 'local' },
+        googleId:      { type: String, sparse: true },
+        facebookId:    { type: String, sparse: true },
+        profilePicture:{ type: String, default: null },
+        biography:     { type: String, default: null, trim: true },
+        location:      { type: String, default: null, trim: true },
+        rating:        { type: Number, default: 0, min: 0, max: 5 },
+        reviewCount:   { type: Number, default: 0, min: 0 },
+        itemsSold:     { type: Number, default: 0, min: 0 },
+        savedPosts:    { type: [Schema.Types.ObjectId], ref: 'Post', default: [] },
     },
     { timestamps: true }
 );
@@ -35,6 +44,7 @@ const UserSchema = new Schema<IUser>(
 // Allows fast lookup of "which users saved post X" and efficient
 // membership checks when toggling a save.
 UserSchema.index({ savedPosts: 1 });
+UserSchema.index({ googleId: 1 }, { sparse: true });
 
 UserSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) return;
